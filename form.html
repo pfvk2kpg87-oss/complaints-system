@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام تسجيل الشكاوى – ذوو الهمم | Coastline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+:root {
+  --navy: #1F3864; --blue: #2E6DA4; --light: #BDD7EE;
+  --lighter: #EBF3FB; --white: #fff; --dark: #1E1E1E;
+  --gray: #555; --border: #d0e4f4; --green: #2E7D32;
+  --orange: #E65100; --red: #C62828;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Tajawal',Arial,sans-serif; background:linear-gradient(135deg,#EBF3FB,#f7fafd,#e8f0f8); min-height:100vh; padding:24px 16px 60px; }
+.page { max-width:720px; margin:0 auto; }
+
+/* Header */
+.header { background:var(--navy); border-radius:18px 18px 0 0; padding:24px 32px; text-align:center; position:relative; overflow:hidden; }
+.header::before { content:''; position:absolute; top:-30px; left:-30px; width:120px; height:120px; border-radius:50%; background:rgba(189,215,238,.08); }
+.header-title-ar { font-size:24px; font-weight:800; color:var(--white); margin-bottom:6px; }
+.header-sub-ar { font-size:14px; color:var(--light); margin-bottom:4px; }
+.header-sub-en { font-size:12px; color:rgba(189,215,238,.7); direction:ltr; }
+.accent { background:var(--light); height:5px; }
+
+/* Ref badge */
+.ref-badge { background:var(--lighter); border:2px solid var(--light); border-radius:10px; padding:12px 20px; margin:16px 0; display:flex; align-items:center; justify-content:space-between; }
+.ref-label { font-size:14px; font-weight:700; color:var(--navy); }
+.ref-num { font-size:22px; font-weight:800; color:var(--navy); direction:ltr; font-family:monospace; letter-spacing:2px; }
+
+/* Form card */
+.form-card { background:var(--white); border-radius:0 0 18px 18px; padding:28px 28px 32px; box-shadow:0 16px 48px rgba(31,56,100,.13); }
+
+.section-head { display:flex; align-items:center; gap:10px; margin:24px 0 16px; }
+.section-head:first-child { margin-top:0; }
+.sdot { width:10px; height:10px; border-radius:50%; background:var(--navy); flex-shrink:0; }
+.stitle-ar { font-size:17px; font-weight:700; color:var(--navy); }
+.stitle-en { font-size:11px; color:var(--blue); font-weight:500; direction:ltr; }
+.sline { flex:1; height:1px; background:linear-gradient(to left,transparent,var(--border)); }
+
+.field { margin-bottom:18px; }
+label.fl { display:block; font-size:14px; font-weight:700; color:var(--navy); margin-bottom:3px; }
+label.fl-en { display:block; font-size:11px; color:var(--blue); margin-bottom:8px; }
+input[type=text], input[type=email], input[type=tel], textarea, select {
+  width:100%; padding:11px 14px; border:1.5px solid var(--border);
+  border-radius:10px; font-family:'Tajawal',Arial; font-size:14px;
+  color:var(--dark); background:#fafcff; outline:none; transition:border .2s,box-shadow .2s;
+}
+input:focus, textarea:focus, select:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(31,56,100,.08); background:var(--white); }
+textarea { resize:vertical; min-height:100px; }
+
+/* Options grid */
+.opts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px; }
+.opts.three { grid-template-columns:1fr 1fr 1fr; }
+.opt { display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--border); cursor:pointer; transition:all .15s; background:#fafcff; }
+.opt:hover { border-color:var(--navy); background:var(--lighter); }
+.opt input { display:none; }
+.opt input:checked + .obox { background:var(--navy); border-color:var(--navy); }
+.opt input:checked + .obox::after { content:'✓'; color:white; font-size:11px; }
+.obox { width:20px; height:20px; border-radius:5px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.obox.round { border-radius:50%; }
+.otext { font-size:13px; color:var(--navy); font-weight:500; }
+
+/* Severity */
+.severity-row { display:flex; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.sev-opt { flex:1; min-width:80px; }
+.sev-opt input { display:none; }
+.sev-label { display:block; padding:10px 8px; border-radius:10px; border:2px solid var(--border); text-align:center; cursor:pointer; font-size:13px; font-weight:700; transition:all .15s; }
+.sev-opt input:checked + .sev-label.low { background:#E8F5E9; border-color:#2E7D32; color:#2E7D32; }
+.sev-opt input:checked + .sev-label.med { background:#FFF8E1; border-color:#F9A825; color:#F9A825; }
+.sev-opt input:checked + .sev-label.high { background:#FFF3E0; border-color:#E65100; color:#E65100; }
+.sev-opt input:checked + .sev-label.urgent { background:#FFEBEE; border-color:#C62828; color:#C62828; }
+
+.divider { height:1px; background:linear-gradient(to right,transparent,var(--border),transparent); margin:20px 0; }
+
+/* Submit */
+.submit-btn { width:100%; padding:15px; background:var(--navy); color:var(--white); border:none; border-radius:12px; font-family:'Tajawal',Arial; font-size:16px; font-weight:700; cursor:pointer; margin-top:24px; transition:all .2s; }
+.submit-btn:hover { background:var(--blue); transform:translateY(-1px); box-shadow:0 6px 20px rgba(31,56,100,.25); }
+
+/* Success */
+.success { display:none; text-align:center; padding:40px 20px; }
+.success-icon { font-size:60px; margin-bottom:16px; }
+.success-ref { background:var(--lighter); border:2px solid var(--light); border-radius:12px; padding:16px; margin:16px 0; }
+.success-ref-label { font-size:13px; color:var(--blue); margin-bottom:6px; }
+.success-ref-num { font-size:28px; font-weight:800; color:var(--navy); direction:ltr; font-family:monospace; }
+
+.req { color:#c0392b; }
+.footer-note { text-align:center; margin-top:16px; font-size:12px; color:var(--blue); opacity:.7; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="header-title-ar">نظام تسجيل الشكاوى</div>
+    <div class="header-sub-ar">خاص بالأشخاص ذوي الهمم — موظف / عميل / زائر</div>
+    <div class="header-sub-en">Complaints Registration System – Persons of Determination</div>
+  </div>
+  <div class="accent"></div>
+
+  <div class="form-card">
+    <!-- Ref number -->
+    <div class="ref-badge">
+      <div class="ref-label">رقم الشكوى المرجعي <span style="font-size:11px;color:var(--blue);direction:ltr">Reference No.</span></div>
+      <div class="ref-num" id="refNum">---</div>
+    </div>
+
+    <form id="complaintForm">
+
+      <!-- Section 1: Personal -->
+      <div class="section-head">
+        <div class="sdot"></div>
+        <div><div class="stitle-ar">البيانات الشخصية</div><div class="stitle-en">Personal Information</div></div>
+        <div class="sline"></div>
+      </div>
+
+      <div class="field">
+        <label class="fl">الاسم الكامل (اختياري) <span style="font-size:11px;color:var(--blue);font-weight:400">– Full Name (Optional)</span></label>
+        <input type="text" id="name" placeholder="أدخل اسمك / Enter your name">
+      </div>
+
+      <div class="field">
+        <label class="fl">رقم الجوال أو البريد الإلكتروني (للتواصل)</label>
+        <label class="fl-en">Mobile / Email (for follow-up)</label>
+        <input type="text" id="contact" placeholder="05xxxxxxxx  أو  example@email.com">
+      </div>
+
+      <div class="field">
+        <label class="fl">نوع الإعاقة <span class="req">*</span></label>
+        <label class="fl-en">Type of Disability</label>
+        <div class="opts">
+          <label class="opt"><input type="checkbox" name="dis" value="حركية"><div class="obox"></div><span class="otext">حركية / Physical</span></label>
+          <label class="opt"><input type="checkbox" name="dis" value="بصرية"><div class="obox"></div><span class="otext">بصرية / Visual</span></label>
+          <label class="opt"><input type="checkbox" name="dis" value="سمعية"><div class="obox"></div><span class="otext">سمعية / Hearing</span></label>
+          <label class="opt"><input type="checkbox" name="dis" value="ذهنية"><div class="obox"></div><span class="otext">ذهنية / Cognitive</span></label>
+          <label class="opt"><input type="checkbox" name="dis" value="متعددة"><div class="obox"></div><span class="otext">متعددة / Multiple</span></label>
+          <label class="opt"><input type="checkbox" name="dis" value="أخرى"><div class="obox"></div><span class="otext">أخرى / Other</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="fl">صفتك <span class="req">*</span></label>
+        <label class="fl-en">Your Role</label>
+        <div class="opts three">
+          <label class="opt"><input type="radio" name="role" value="موظف"><div class="obox round"></div><span class="otext">موظف / Employee</span></label>
+          <label class="opt"><input type="radio" name="role" value="عميل"><div class="obox round"></div><span class="otext">عميل / Client</span></label>
+          <label class="opt"><input type="radio" name="role" value="زائر"><div class="obox round"></div><span class="otext">زائر / Visitor</span></label>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Section 2: Complaint -->
+      <div class="section-head">
+        <div class="sdot"></div>
+        <div><div class="stitle-ar">تفاصيل الشكوى</div><div class="stitle-en">Complaint Details</div></div>
+        <div class="sline"></div>
+      </div>
+
+      <div class="field">
+        <label class="fl">موضوع الشكوى <span class="req">*</span></label>
+        <label class="fl-en">Complaint Category</label>
+        <select id="category">
+          <option value="">— اختر الموضوع / Select Category —</option>
+          <option value="إمكانية الوصول والمرافق">إمكانية الوصول والمرافق</option>
+          <option value="تعامل الموظفين">تعامل الموظفين</option>
+          <option value="التسهيلات والأجهزة المساعدة">التسهيلات والأجهزة المساعدة</option>
+          <option value="التواصل والمعلومات">التواصل والمعلومات</option>
+          <option value="التمييز أو الإقصاء">التمييز أو الإقصاء</option>
+          <option value="جودة الخدمة المقدمة">جودة الخدمة المقدمة</option>
+          <option value="بيئة العمل والسلامة">بيئة العمل والسلامة</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="fl">مكان حدوث المشكلة</label>
+        <label class="fl-en">Location of Incident</label>
+        <select id="location">
+          <option value="">— اختر المكان / Select Location —</option>
+          <option value="المدخل الرئيسي">المدخل الرئيسي</option>
+          <option value="منطقة الاستقبال">منطقة الاستقبال</option>
+          <option value="الممرات الداخلية">الممرات الداخلية</option>
+          <option value="المصاعد">المصاعد</option>
+          <option value="دورات المياه">دورات المياه</option>
+          <option value="غرف الاجتماعات">غرف الاجتماعات</option>
+          <option value="مواقف السيارات">مواقف السيارات</option>
+          <option value="بيئة العمل المكتبية">بيئة العمل المكتبية</option>
+          <option value="الموقع الإلكتروني / التطبيق">الموقع الإلكتروني / التطبيق</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="fl">تاريخ حدوث المشكلة</label>
+        <label class="fl-en">Date of Incident</label>
+        <input type="text" id="incidentDate" placeholder="مثال: 15 يونيو 2026  /  e.g. June 15, 2026">
+      </div>
+
+      <div class="field">
+        <label class="fl">وصف الشكوى بالتفصيل <span class="req">*</span></label>
+        <label class="fl-en">Detailed Description</label>
+        <textarea id="description" placeholder="اشرح ما حدث بالتفصيل... / Describe what happened in detail..."></textarea>
+      </div>
+
+      <div class="field">
+        <label class="fl">درجة خطورة المشكلة <span class="req">*</span></label>
+        <label class="fl-en">Severity Level</label>
+        <div class="severity-row">
+          <div class="sev-opt"><input type="radio" name="severity" id="sev1" value="منخفضة"><label for="sev1" class="sev-label low">🟢 منخفضة</label></div>
+          <div class="sev-opt"><input type="radio" name="severity" id="sev2" value="متوسطة"><label for="sev2" class="sev-label med">🟡 متوسطة</label></div>
+          <div class="sev-opt"><input type="radio" name="severity" id="sev3" value="عالية"><label for="sev3" class="sev-label high">🟠 عالية</label></div>
+          <div class="sev-opt"><input type="radio" name="severity" id="sev4" value="عاجلة"><label for="sev4" class="sev-label urgent">🔴 عاجلة</label></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Section 3: Resolution -->
+      <div class="section-head">
+        <div class="sdot"></div>
+        <div><div class="stitle-ar">الحل المقترح والتواصل</div><div class="stitle-en">Suggested Resolution & Contact</div></div>
+        <div class="sline"></div>
+      </div>
+
+      <div class="field">
+        <label class="fl">ما الحل الذي تقترحه؟ (اختياري)</label>
+        <label class="fl-en">Suggested Solution (Optional)</label>
+        <textarea id="suggestion" placeholder="اقتراحك لحل المشكلة... / Your suggested solution..." style="min-height:70px"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="fl">هل تودّ البقاء مجهول الهوية؟</label>
+        <label class="fl-en">Do you wish to remain anonymous?</label>
+        <div class="opts" style="grid-template-columns:1fr 1fr;max-width:300px">
+          <label class="opt"><input type="radio" name="anon" value="لا"><div class="obox round"></div><span class="otext">لا / No</span></label>
+          <label class="opt"><input type="radio" name="anon" value="نعم"><div class="obox round"></div><span class="otext">نعم / Yes</span></label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="fl">طريقة الرد المفضلة</label>
+        <label class="fl-en">Preferred Response Method</label>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="replyMethod" value="بريد إلكتروني"><div class="obox round"></div><span class="otext">بريد إلكتروني</span></label>
+          <label class="opt"><input type="radio" name="replyMethod" value="جوال / واتساب"><div class="obox round"></div><span class="otext">جوال / واتساب</span></label>
+          <label class="opt"><input type="radio" name="replyMethod" value="لقاء مباشر"><div class="obox round"></div><span class="otext">لقاء مباشر</span></label>
+          <label class="opt"><input type="radio" name="replyMethod" value="أي وسيلة"><div class="obox round"></div><span class="otext">أي وسيلة</span></label>
+        </div>
+      </div>
+
+      <button type="button" class="submit-btn" onclick="submitComplaint()">
+        إرسال الشكوى — Submit Complaint
+      </button>
+    </form>
+
+    <!-- Success message -->
+    <div class="success" id="successDiv">
+      <div class="success-icon">✅</div>
+      <div style="font-size:22px;font-weight:800;color:var(--navy);margin-bottom:8px">تم استلام شكواك!</div>
+      <div style="font-size:14px;color:var(--blue);margin-bottom:4px">Your complaint has been received</div>
+      <div class="success-ref">
+        <div class="success-ref-label">رقم الشكوى المرجعي / Reference Number</div>
+        <div class="success-ref-num" id="successRef"></div>
+      </div>
+      <div style="font-size:14px;color:var(--gray);line-height:1.8;margin-top:12px">
+        سيتم التواصل معك خلال <strong>يوم عمل واحد</strong><br>
+        <span style="direction:ltr;display:block">You will be contacted within <strong>1 business day</strong></span>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">شركة خط الشاطئ المحدودة © 2026 — جميع الشكاوى سرية ومحفوظة</div>
+</div>
+
+<script>
+// ==== إعداد الربط بجدول Google Sheets ====
+// الصقي هنا رابط تطبيق الويب (Web App URL) الذي تحصلين عليه بعد نشر كود Apps Script
+// راجعي "دليل الإعداد.md" للحصول على الرابط
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbykvKNo7ykLkE_zim2PgSobIY8SmoQu4jB0WDVLDppFCpv6zIRThTxKFXG0GOZyiQ3W/exec";
+
+// Generate reference number (احتياطي محلي فقط في حال تعذّر الاتصال بالجدول)
+function genRefFallback() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const r = String(Math.floor(Math.random()*9000)+1000);
+  return `CMP-${y}${m}${d}-${r}`;
+}
+
+document.getElementById('refNum').textContent = 'سيُصدَر عند الإرسال';
+
+async function submitComplaint() {
+  const submitBtn = document.querySelector('.submit-btn');
+  const name       = document.getElementById('name').value;
+  const contact    = document.getElementById('contact').value;
+  const category   = document.getElementById('category').value;
+  const location   = document.getElementById('location').value;
+  const incDate    = document.getElementById('incidentDate').value;
+  const desc       = document.getElementById('description').value;
+  const suggestion = document.getElementById('suggestion').value;
+
+  if (!category || !desc) {
+    alert('يرجى تعبئة موضوع الشكوى والوصف التفصيلي على الأقل\nPlease fill in the complaint category and description.');
+    return;
+  }
+
+  const disTypes   = [...document.querySelectorAll('input[name="dis"]:checked')].map(i=>i.value).join(', ') || 'لم يُحدد';
+  const role       = (document.querySelector('input[name="role"]:checked') || {value:'لم يُحدد'}).value;
+  const severity   = (document.querySelector('input[name="severity"]:checked') || {value:'لم يُحدد'}).value;
+  const anon       = (document.querySelector('input[name="anon"]:checked') || {value:'لم يُحدد'}).value;
+  const replyM     = (document.querySelector('input[name="replyMethod"]:checked') || {value:'لم يُحدد'}).value;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'جارٍ الإرسال... — Sending...';
+
+  let REF = null;
+  let savedToSheet = false;
+
+  const payload = {
+    action: 'create',
+    category,
+    submitter: anon === 'نعم' ? 'مجهول الهوية' : (name || 'غير محدد'),
+    contact: contact || '',
+    role,
+    disability: disTypes,
+    incidentDate: incDate || '',
+    location: location || '',
+    description: desc,
+    severity,
+    suggestion: suggestion || '',
+    anonymous: anon,
+    replyMethod: replyM,
+    source: 'نموذج التسجيل الإلكتروني',
+  };
+
+  if (WEBAPP_URL && WEBAPP_URL.indexOf('PASTE_YOUR') === -1) {
+    try {
+      const res = await fetch(WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data && data.success && data.ref) {
+        REF = data.ref;
+        savedToSheet = true;
+      }
+    } catch (err) {
+      console.error('تعذّر الحفظ في سجل المتابعة المركزي:', err);
+    }
+  }
+
+  if (!REF) REF = genRefFallback();
+
+  let body = `📋 شكوى جديدة – نظام تسجيل شكاوى ذوي الهمم\n`;
+  body += `${'='.repeat(50)}\n\n`;
+  body += `رقم الشكوى المرجعي: ${REF}\n`;
+  body += `تاريخ التسجيل: ${new Date().toLocaleDateString('ar-SA')}\n`;
+  body += savedToSheet ? `الحفظ في السجل المركزي: تم بنجاح ✅\n\n` : `الحفظ في السجل المركزي: لم يتم — يرجى إضافتها يدويًا ⚠️\n\n`;
+  body += `─── بيانات مقدم الشكوى ───\n`;
+  body += `الاسم: ${name || 'مجهول الهوية'}\n`;
+  body += `التواصل: ${contact || 'لم يُذكر'}\n`;
+  body += `الصفة: ${role}\n`;
+  body += `نوع الإعاقة: ${disTypes}\n`;
+  body += `البقاء مجهول الهوية: ${anon}\n\n`;
+  body += `─── تفاصيل الشكوى ───\n`;
+  body += `موضوع الشكوى: ${category}\n`;
+  body += `مكان الحدوث: ${location || 'لم يُحدد'}\n`;
+  body += `تاريخ الحدوث: ${incDate || 'لم يُحدد'}\n`;
+  body += `درجة الخطورة: ${severity}\n`;
+  body += `الوصف التفصيلي:\n${desc}\n\n`;
+  body += `─── الحل والتواصل ───\n`;
+  body += `الحل المقترح: ${suggestion || 'لم يُقترح'}\n`;
+  body += `طريقة الرد المفضلة: ${replyM}\n\n`;
+  body += `${'='.repeat(50)}\n`;
+  body += `تم الإرسال من نظام شكاوى ذوي الهمم – Coastline Limited Company`;
+
+  const subject = encodeURIComponent(`شكوى جديدة [${REF}] – ${category} – درجة: ${severity}`);
+  window.location.href = `mailto:rahaf.malouf@coastline-fm.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+  setTimeout(() => {
+    document.getElementById('complaintForm').style.display = 'none';
+    document.getElementById('successDiv').style.display = 'block';
+    document.getElementById('successRef').textContent = REF;
+    if (!savedToSheet) {
+      const warn = document.createElement('div');
+      warn.style.cssText = 'margin-top:14px;padding:12px;background:#FFF3E0;border:1.5px solid #E65100;border-radius:10px;font-size:13px;color:#E65100;font-weight:700';
+      warn.textContent = 'تعذّر الحفظ التلقائي في السجل المركزي — يرجى التأكد من وصول البريد الإلكتروني للمتابعة اليدوية.';
+      document.getElementById('successDiv').appendChild(warn);
+    }
+  }, 400);
+}
+</script>
+</body>
+</html>
