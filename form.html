@@ -334,6 +334,7 @@ async function submitComplaint() {
     source: 'نموذج التسجيل الإلكتروني',
   };
 
+  let errDetail = '';
   if (WEBAPP_URL && WEBAPP_URL.indexOf('PASTE_YOUR') === -1) {
     try {
       const res = await fetch(WEBAPP_URL, {
@@ -341,13 +342,19 @@ async function submitComplaint() {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
+      const rawText = await res.text();
+      let data;
+      try { data = JSON.parse(rawText); }
+      catch (parseErr) { errDetail = 'الرد ليس JSON صالح: ' + rawText.slice(0, 200); }
       if (data && data.success && data.ref) {
         REF = data.ref;
         savedToSheet = true;
+      } else if (data && !errDetail) {
+        errDetail = 'رد الخادم: ' + JSON.stringify(data);
       }
     } catch (err) {
       console.error('تعذّر الحفظ في سجل المتابعة المركزي:', err);
+      errDetail = (err && err.message) ? err.message : String(err);
     }
   }
 
@@ -386,7 +393,8 @@ async function submitComplaint() {
     if (!savedToSheet) {
       const warn = document.createElement('div');
       warn.style.cssText = 'margin-top:14px;padding:12px;background:#FFF3E0;border:1.5px solid #E65100;border-radius:10px;font-size:13px;color:#E65100;font-weight:700';
-      warn.textContent = 'تعذّر الحفظ التلقائي في السجل المركزي — يرجى التأكد من وصول البريد الإلكتروني للمتابعة اليدوية.';
+      warn.textContent = 'تعذّر الحفظ التلقائي في السجل المركزي — يرجى التأكد من وصول البريد الإلكتروني للمتابعة اليدوية.' + (errDetail ? ('\n\nتفاصيل الخطأ: ' + errDetail) : '');
+      warn.style.whiteSpace = 'pre-wrap';
       document.getElementById('successDiv').appendChild(warn);
     }
   }, 400);
