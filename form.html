@@ -322,6 +322,10 @@ function submitViaHiddenForm(url) {
 }
 
 async function submitComplaint() {
+  // نحجز تبويب فارغ بشكل متزامن (قبل أي انتظار) لتفادي حجب النوافذ المنبثقة،
+  // نستخدمه لاحقاً كخطة بديلة تُحمّل الرابط فعلياً كصفحة كاملة إذا فشل الإرسال الصامت.
+  const reservedTab = window.open('', '_blank');
+
   const submitBtn = document.querySelector('.submit-btn');
   const name       = document.getElementById('name').value;
   const contact    = document.getElementById('contact').value;
@@ -332,6 +336,7 @@ async function submitComplaint() {
   const suggestion = document.getElementById('suggestion').value;
 
   if (!category || !desc) {
+    if (reservedTab && !reservedTab.closed) reservedTab.close();
     alert('يرجى تعبئة موضوع الشكوى والوصف التفصيلي على الأقل\nPlease fill in the complaint category and description.');
     return;
   }
@@ -382,18 +387,29 @@ async function submitComplaint() {
       } else if (data && !errDetail) {
         errDetail = 'رد الخادم: ' + JSON.stringify(data);
       }
+      if (reservedTab && !reservedTab.closed) reservedTab.close();
     } catch (err) {
-      console.error('محاولة القراءة العادية فشلت، تجربة إرسال بديل عبر نموذج مخفي:', err);
-      // بعض متصفحات آيفون تمنع طلبات fetch لهذا النطاق كلياً (حتى no-cors).
-      // نستخدم إرسال نموذج (form submit) عبر iframe مخفي، وهو نفس آلية فتح رابط عادي
-      // ولا تخضع لنفس القيود، فتضمن وصول البيانات حتى لو تعذّرت قراءة الرد.
+      console.error('محاولة القراءة العادية فشلت، تجربة إرسال بديل عبر تبويب حقيقي:', err);
+      // بعض متصفحات آيفون تمنع أي طلب برمجي (fetch/iframe) لهذا النطاق كلياً،
+      // لكنها تسمح بفتح الرابط كصفحة حقيقية. نحمّل الرابط داخل التبويب المحجوز مسبقاً
+      // ثم نغلقه تلقائياً بعد لحظة، فيصل الطلب فعلياً للخادم.
       try {
-        await submitViaHiddenForm(fullUrl);
-        beaconSent = true;
+        if (reservedTab && !reservedTab.closed) {
+          reservedTab.location.href = fullUrl;
+          await new Promise(r => setTimeout(r, 1800));
+          reservedTab.close();
+          beaconSent = true;
+        } else {
+          // التبويب انحجب من المتصفح؛ نجرب البديل الأخير عبر نموذج مخفي
+          await submitViaHiddenForm(fullUrl);
+          beaconSent = true;
+        }
       } catch (err2) {
         errDetail = (err2 && err2.message) ? err2.message : String(err2);
       }
     }
+  } else {
+    if (reservedTab && !reservedTab.closed) reservedTab.close();
   }
 
   if (!REF) REF = genRefFallback();
