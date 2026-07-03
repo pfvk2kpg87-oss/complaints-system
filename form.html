@@ -278,54 +278,9 @@ textarea { resize:vertical; min-height:100px; }
 // راجعي "دليل الإعداد.md" للحصول على الرابط
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbykvKNo7ykLkE_zim2PgSobIY8SmoQu4jB0WDVLDppFCpv6zIRThTxKFXG0GOZyiQ3W/exec";
 
-// Generate reference number (احتياطي محلي فقط في حال تعذّر الاتصال بالجدول)
-function genRefFallback() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth()+1).padStart(2,'0');
-  const d = String(now.getDate()).padStart(2,'0');
-  const r = String(Math.floor(Math.random()*9000)+1000);
-  return `CMP-${y}${m}${d}-${r}`;
-}
-
 document.getElementById('refNum').textContent = 'سيُصدَر عند الإرسال';
 
-// إرسال طلب GET عبر نموذج مخفي داخل iframe — يتجاوز قيود fetch/CORS
-// على بعض متصفحات آيفون، لأنه يُعامَل كتصفح عادي وليس كطلب برمجي.
-function submitViaHiddenForm(url) {
-  return new Promise((resolve) => {
-    let iframe = document.getElementById('hiddenSubmitFrame');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.id = 'hiddenSubmitFrame';
-      iframe.name = 'hiddenSubmitFrame';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-    }
-    const form = document.createElement('form');
-    form.method = 'GET';
-    form.action = url.split('?')[0];
-    form.target = 'hiddenSubmitFrame';
-    const params = new URLSearchParams(url.split('?')[1] || '');
-    params.forEach((value, key) => {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = value;
-      form.appendChild(input);
-    });
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    setTimeout(resolve, 1200);
-  });
-}
-
 async function submitComplaint() {
-  // نحجز تبويب فارغ بشكل متزامن (قبل أي انتظار) لتفادي حجب النوافذ المنبثقة،
-  // نستخدمه لاحقاً كخطة بديلة تُحمّل الرابط فعلياً كصفحة كاملة إذا فشل الإرسال الصامت.
-  const reservedTab = window.open('', '_blank');
-
   const submitBtn = document.querySelector('.submit-btn');
   const name       = document.getElementById('name').value;
   const contact    = document.getElementById('contact').value;
@@ -336,7 +291,6 @@ async function submitComplaint() {
   const suggestion = document.getElementById('suggestion').value;
 
   if (!category || !desc) {
-    if (reservedTab && !reservedTab.closed) reservedTab.close();
     alert('يرجى تعبئة موضوع الشكوى والوصف التفصيلي على الأقل\nPlease fill in the complaint category and description.');
     return;
   }
@@ -349,9 +303,6 @@ async function submitComplaint() {
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'جارٍ الإرسال... — Sending...';
-
-  let REF = null;
-  let savedToSheet = false;
 
   const payload = {
     action: 'create',
@@ -370,55 +321,47 @@ async function submitComplaint() {
     source: 'نموذج التسجيل الإلكتروني',
   };
 
-  let errDetail = '';
-  let beaconSent = false;
-  if (WEBAPP_URL && WEBAPP_URL.indexOf('PASTE_YOUR') === -1) {
-    const qs = new URLSearchParams({ action: 'create', ...payload }).toString();
-    const fullUrl = WEBAPP_URL + '?' + qs;
-    try {
-      const res = await fetch(fullUrl, { method: 'GET' });
-      const rawText = await res.text();
-      let data;
-      try { data = JSON.parse(rawText); }
-      catch (parseErr) { errDetail = 'الرد ليس JSON صالح: ' + rawText.slice(0, 200); }
-      if (data && data.success && data.ref) {
-        REF = data.ref;
-        savedToSheet = true;
-      } else if (data && !errDetail) {
-        errDetail = 'رد الخادم: ' + JSON.stringify(data);
-      }
-      if (reservedTab && !reservedTab.closed) reservedTab.close();
-    } catch (err) {
-      console.error('محاولة القراءة العادية فشلت، تجربة إرسال بديل عبر تبويب حقيقي:', err);
-      // بعض متصفحات آيفون تمنع أي طلب برمجي (fetch/iframe) لهذا النطاق كلياً،
-      // لكنها تسمح بفتح الرابط كصفحة حقيقية. نحمّل الرابط داخل التبويب المحجوز مسبقاً
-      // ثم نغلقه تلقائياً بعد لحظة، فيصل الطلب فعلياً للخادم.
-      try {
-        if (reservedTab && !reservedTab.closed) {
-          reservedTab.location.href = fullUrl;
-          await new Promise(r => setTimeout(r, 1800));
-          reservedTab.close();
-          beaconSent = true;
-        } else {
-          // التبويب انحجب من المتصفح؛ نجرب البديل الأخير عبر نموذج مخفي
-          await submitViaHiddenForm(fullUrl);
-          beaconSent = true;
-        }
-      } catch (err2) {
-        errDetail = (err2 && err2.message) ? err2.message : String(err2);
-      }
+  const qs = new URLSearchParams(payload).toString();
+  const fullUrl = WEBAPP_URL + '?' + qs;
+
+  // نحاول أولاً الإرسال الصامت (fetch) للحصول على تجربة سلسة بدون مغادرة الصفحة —
+  // يعمل على أغلب المتصفحات (كمبيوتر، أندرويد، ومعظم حالات آيفون).
+  let REF = null, savedToSheet = false;
+  try {
+    const res = await fetch(fullUrl, { method: 'GET' });
+    const data = await res.json();
+    if (data && data.success && data.ref) {
+      REF = data.ref;
+      savedToSheet = true;
     }
-  } else {
-    if (reservedTab && !reservedTab.closed) reservedTab.close();
+  } catch (err) {
+    console.error('تعذّر الإرسال الصامت، سيتم تحويلك مباشرة للرابط:', err);
   }
 
-  if (!REF) REF = genRefFallback();
+  if (savedToSheet) {
+    // نجح الإرسال الصامت — نعرض شاشة النجاح داخل نفس الصفحة، ونفتح بريد النسخة الاحتياطية
+    let body = buildEmailBody(REF, name, contact, role, disTypes, anon, category, location, incDate, severity, desc, suggestion, replyM, true);
+    const subject = encodeURIComponent(`شكوى جديدة [${REF}] – ${category} – درجة: ${severity}`);
+    window.location.href = `mailto:rahaf.malouf@coastline-fm.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+    setTimeout(() => {
+      document.getElementById('complaintForm').style.display = 'none';
+      document.getElementById('successDiv').style.display = 'block';
+      document.getElementById('successRef').textContent = REF;
+    }, 400);
+  } else {
+    // فشل الإرسال الصامت (شائع على بعض متصفحات آيفون) — ننتقل مباشرة لرابط الخادم
+    // بنفس طريقة فتح رابط عادي، وهي مضمونة العمل دائماً. الخادم سيعرض صفحة تأكيد
+    // جميلة فيها رقم الشكوى وزر للعودة للنموذج.
+    window.location.href = fullUrl;
+  }
+}
 
+function buildEmailBody(REF, name, contact, role, disTypes, anon, category, location, incDate, severity, desc, suggestion, replyM, savedToSheet) {
   let body = `📋 شكوى جديدة – نظام تسجيل شكاوى ذوي الهمم\n`;
   body += `${'='.repeat(50)}\n\n`;
   body += `رقم الشكوى المرجعي: ${REF}\n`;
   body += `تاريخ التسجيل: ${new Date().toLocaleDateString('ar-SA')}\n`;
-  body += savedToSheet ? `الحفظ في السجل المركزي: تم بنجاح ✅\n\n` : (beaconSent ? `الحفظ في السجل المركزي: أُرسل، بانتظار التأكيد\n\n` : `الحفظ في السجل المركزي: لم يتم — يرجى إضافتها يدويًا ⚠️\n\n`);
+  body += savedToSheet ? `الحفظ في السجل المركزي: تم بنجاح ✅\n\n` : `الحفظ في السجل المركزي: لم يتم — يرجى إضافتها يدويًا ⚠️\n\n`;
   body += `─── بيانات مقدم الشكوى ───\n`;
   body += `الاسم: ${name || 'مجهول الهوية'}\n`;
   body += `التواصل: ${contact || 'لم يُذكر'}\n`;
@@ -436,28 +379,7 @@ async function submitComplaint() {
   body += `طريقة الرد المفضلة: ${replyM}\n\n`;
   body += `${'='.repeat(50)}\n`;
   body += `تم الإرسال من نظام شكاوى ذوي الهمم – Coastline Limited Company`;
-
-  const subject = encodeURIComponent(`شكوى جديدة [${REF}] – ${category} – درجة: ${severity}`);
-  window.location.href = `mailto:rahaf.malouf@coastline-fm.com?subject=${subject}&body=${encodeURIComponent(body)}`;
-
-  setTimeout(() => {
-    document.getElementById('complaintForm').style.display = 'none';
-    document.getElementById('successDiv').style.display = 'block';
-    document.getElementById('successRef').textContent = REF;
-    if (!savedToSheet && beaconSent) {
-      const note = document.createElement('div');
-      note.style.cssText = 'margin-top:14px;padding:12px;background:#E8F0FE;border:1.5px solid #1A5276;border-radius:10px;font-size:13px;color:#1A5276;font-weight:700';
-      note.textContent = 'أُرسل طلبك إلى السجل المركزي، لكن هذا الجهاز لا يستطيع تأكيد نجاح الحفظ فوراً. الرقم أعلاه رقم مرجعي مؤقت لك؛ الرقم الرسمي الظاهر في السجل نفسه قد يختلف بسيط عنه.';
-      note.style.whiteSpace = 'pre-wrap';
-      document.getElementById('successDiv').appendChild(note);
-    } else if (!savedToSheet && !beaconSent) {
-      const warn = document.createElement('div');
-      warn.style.cssText = 'margin-top:14px;padding:12px;background:#FFF3E0;border:1.5px solid #E65100;border-radius:10px;font-size:13px;color:#E65100;font-weight:700';
-      warn.textContent = 'تعذّر الحفظ التلقائي في السجل المركزي — يرجى التأكد من وصول البريد الإلكتروني للمتابعة اليدوية.' + (errDetail ? ('\n\nتفاصيل الخطأ: ' + errDetail) : '');
-      warn.style.whiteSpace = 'pre-wrap';
-      document.getElementById('successDiv').appendChild(warn);
-    }
-  }, 400);
+  return body;
 }
 </script>
 </body>
