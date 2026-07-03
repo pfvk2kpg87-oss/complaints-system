@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجل متابعة الشكاوى – ذوو الهمم | Coastline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+:root {
+  --navy:#1F3864; --blue:#2E6DA4; --light:#BDD7EE; --lighter:#EBF3FB;
+  --white:#fff; --dark:#1E1E1E; --gray:#666; --border:#d0e4f4;
+  --green:#2E7D32; --lgreen:#E8F5E9; --orange:#E65100; --lorange:#FFF3E0;
+  --red:#C62828; --lred:#FFEBEE; --purple:#6A1B9A; --lpurple:#F3E5F5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Tajawal',Arial,sans-serif;background:#f0f4f8;min-height:100vh;}
+
+/* Top bar */
+.topbar{background:var(--navy);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(31,56,100,.3);}
+.topbar-title{font-size:18px;font-weight:800;color:var(--white);}
+.topbar-sub{font-size:11px;color:var(--light);direction:ltr;}
+.topbar-actions{display:flex;gap:10px;}
+.btn{padding:8px 16px;border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--light);color:var(--navy);}
+.btn-primary:hover{background:var(--white);}
+.btn-export{background:rgba(255,255,255,.15);color:var(--white);border:1px solid rgba(255,255,255,.3);}
+.btn-export:hover{background:rgba(255,255,255,.25);}
+
+/* Stats strip */
+.stats{background:var(--white);border-bottom:2px solid var(--border);padding:12px 24px;display:flex;gap:20px;overflow-x:auto;}
+.stat-box{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.stat-num{font-size:22px;font-weight:800;color:var(--navy);}
+.stat-label{font-size:12px;color:var(--gray);line-height:1.3;}
+.stat-divider{width:1px;background:var(--border);align-self:stretch;}
+
+/* Filters */
+.filters{background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:13px;font-weight:700;color:var(--navy);}
+select.filter,input.filter{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;color:var(--dark);background:#fafcff;outline:none;}
+select.filter:focus,input.filter:focus{border-color:var(--navy);}
+.btn-reset{padding:7px 14px;background:var(--lighter);color:var(--navy);border:1.5px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* Table */
+.table-wrap{overflow-x:auto;padding:16px 24px;}
+table{width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(31,56,100,.08);}
+thead tr{background:var(--navy);}
+th{padding:12px 10px;font-size:13px;font-weight:700;color:var(--white);text-align:right;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:#f0f6ff;}
+tbody tr:last-child{border-bottom:none;}
+td{padding:11px 10px;font-size:13px;color:var(--dark);vertical-align:middle;}
+td.num{font-weight:700;color:var(--blue);font-family:monospace;direction:ltr;text-align:center;}
+
+/* Status badge */
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.badge-open{background:var(--lred);color:var(--red);}
+.badge-progress{background:var(--lorange);color:var(--orange);}
+.badge-closed{background:var(--lgreen);color:var(--green);}
+.badge-hold{background:var(--lpurple);color:var(--purple);}
+
+/* Severity badge */
+.sev{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.sev-low{background:#E8F5E9;color:#2E7D32;}
+.sev-med{background:#FFF8E1;color:#F9A825;}
+.sev-high{background:#FFF3E0;color:#E65100;}
+.sev-urgent{background:#FFEBEE;color:#C62828;}
+
+/* Actions */
+.act-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Tajawal',Arial;}
+.act-edit{background:var(--lighter);color:var(--navy);}
+.act-del{background:#FFEBEE;color:var(--red);margin-right:4px;}
+
+/* Add form */
+.add-section{background:var(--white);border-top:3px solid var(--light);padding:20px 24px;}
+.add-title{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:16px;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.form-grid .full{grid-column:1/-1;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;color:var(--dark);background:#fafcff;outline:none;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--navy);}
+.add-btn{margin-top:14px;padding:11px 28px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-family:'Tajawal',Arial;font-size:15px;font-weight:700;cursor:pointer;}
+.add-btn:hover{background:var(--blue);}
+
+/* Empty state */
+.empty{text-align:center;padding:40px;color:var(--gray);}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+
+/* Edit modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--white);border-radius:16px;padding:24px;width:90%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:20px;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+.btn-save{padding:10px 24px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-family:'Tajawal',Arial;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-cancel{padding:10px 24px;background:var(--lighter);color:var(--navy);border:1px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:14px;font-weight:700;cursor:pointer;}
+
+/* Lock screen */
+.lock-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;z-index:1000;}
+.lock-card{background:var(--white);border-radius:18px;padding:40px 32px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.lock-icon{font-size:44px;margin-bottom:12px;}
+.lock-title{font-size:19px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+.lock-sub{font-size:13px;color:var(--gray);margin-bottom:20px;line-height:1.6;}
+.lock-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Tajawal',Arial;font-size:15px;text-align:center;margin-bottom:12px;outline:none;box-sizing:border-box;}
+.lock-input:focus{border-color:var(--navy);}
+.lock-btn{width:100%;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-family:'Tajawal',Arial;font-weight:700;font-size:15px;cursor:pointer;}
+.lock-btn:hover{background:var(--blue);}
+.lock-error{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+.app-hidden{display:none;}
+.loading-row td{text-align:center;padding:28px;color:var(--gray);}
+.error-row td{text-align:center;padding:28px;color:var(--red);font-weight:700;}
+</style>
+</head>
+<body>
+
+<!-- Lock screen -->
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">دخول مقيّد</div>
+    <div class="lock-sub">هذا السجل خاص بالمسؤول عن معالجة الشكاوى فقط<br><span style="direction:ltr;display:block;font-size:11px;color:#999;margin-top:4px">Restricted Access — Authorized Personnel Only</span></div>
+    <input type="password" class="lock-input" id="lockPass" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="lock-btn" onclick="tryUnlock()">دخول</button>
+    <div class="lock-error" id="lockError">كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<div id="appContent" class="app-hidden">
+<!-- Top bar -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">📋 سجل متابعة شكاوى ذوي الهمم</div>
+    <div class="topbar-sub">Complaints Tracking Register — Coastline Limited Company 2026</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-export" onclick="exportCSV()">📥 تصدير Excel</button>
+    <button class="btn btn-export" onclick="exportGoogleSheets()">🔗 فتح في Google Sheets</button>
+    <button class="btn btn-primary" onclick="scrollToAdd()">➕ إضافة شكوى</button>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">إجمالي<br>الشكاوى</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="statOpen">0</div><div class="stat-label">مفتوحة<br>Open</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--orange)" id="statProgress">0</div><div class="stat-label">قيد المعالجة<br>In Progress</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="statClosed">0</div><div class="stat-label">مغلقة<br>Closed</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--purple)" id="statHold">0</div><div class="stat-label">معلّقة<br>On Hold</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="statUrgent">0</div><div class="stat-label">عاجلة<br>Urgent</div></div>
+</div>
+
+<!-- Filters -->
+<div class="filters">
+  <span class="filter-label">تصفية:</span>
+  <input type="text" class="filter" id="fSearch" placeholder="🔍 بحث..." oninput="renderTable()">
+  <select class="filter" id="fStatus" onchange="renderTable()">
+    <option value="">كل الحالات</option>
+    <option value="مفتوحة">🔴 مفتوحة</option>
+    <option value="قيد المعالجة">🟡 قيد المعالجة</option>
+    <option value="معلّقة">🔵 معلّقة</option>
+    <option value="مغلقة">🟢 مغلقة</option>
+  </select>
+  <select class="filter" id="fSeverity" onchange="renderTable()">
+    <option value="">كل مستويات الخطورة</option>
+    <option value="عاجلة">🔴 عاجلة</option>
+    <option value="عالية">🟠 عالية</option>
+    <option value="متوسطة">🟡 متوسطة</option>
+    <option value="منخفضة">🟢 منخفضة</option>
+  </select>
+  <select class="filter" id="fRole" onchange="renderTable()">
+    <option value="">كل الصفات</option>
+    <option value="موظف">موظف</option>
+    <option value="عميل">عميل</option>
+    <option value="زائر">زائر</option>
+  </select>
+  <select class="filter" id="fCat" onchange="renderTable()">
+    <option value="">كل المواضيع</option>
+    <option value="إمكانية الوصول والمرافق">إمكانية الوصول والمرافق</option>
+    <option value="تعامل الموظفين">تعامل الموظفين</option>
+    <option value="التسهيلات والأجهزة المساعدة">التسهيلات والأجهزة المساعدة</option>
+    <option value="التواصل والمعلومات">التواصل والمعلومات</option>
+    <option value="التمييز أو الإقصاء">التمييز أو الإقصاء</option>
+    <option value="جودة الخدمة المقدمة">جودة الخدمة المقدمة</option>
+    <option value="بيئة العمل والسلامة">بيئة العمل والسلامة</option>
+    <option value="أخرى">أخرى</option>
+  </select>
+  <button class="btn-reset" onclick="resetFilters()">↺ إعادة تعيين</button>
+  <span style="margin-right:auto;font-size:13px;color:var(--gray)" id="resultCount"></span>
+</div>
+
+<!-- Table -->
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>رقم الشكوى</th>
+        <th>تاريخ التسجيل</th>
+        <th>موضوع الشكوى</th>
+        <th>مقدم الشكوى</th>
+        <th>الصفة</th>
+        <th>نوع الإعاقة</th>
+        <th>درجة الخطورة</th>
+        <th>مكان الحدوث</th>
+        <th>الحالة</th>
+        <th>تاريخ الإغلاق</th>
+        <th>المسؤول عن المعالجة</th>
+        <th>ملاحظات</th>
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="empty-icon">📭</div>
+    <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px">لا توجد شكاوى مطابقة</div>
+    <div style="font-size:13px">غيّري معايير البحث أو أضيفي شكوى جديدة</div>
+  </div>
+</div>
+
+<!-- Add form -->
+<div class="add-section" id="addSection">
+  <div class="add-title">➕ إضافة شكوى جديدة</div>
+  <div class="form-grid">
+    <div class="fg"><label>رقم الشكوى المرجعي</label><input type="text" id="fRef" placeholder="يُصدَر تلقائيًا عند الحفظ" readonly style="background:#f0f0f0;color:var(--blue);font-weight:700"></div>
+    <div class="fg"><label>تاريخ التسجيل <span style="color:red">*</span></label><input type="date" id="fDate"></div>
+    <div class="fg"><label>موضوع الشكوى <span style="color:red">*</span></label>
+      <select id="fCategory">
+        <option value="">— اختر —</option>
+        <option>إمكانية الوصول والمرافق</option><option>تعامل الموظفين</option>
+        <option>التسهيلات والأجهزة المساعدة</option><option>التواصل والمعلومات</option>
+        <option>التمييز أو الإقصاء</option><option>جودة الخدمة المقدمة</option>
+        <option>بيئة العمل والسلامة</option><option>أخرى</option>
+      </select>
+    </div>
+    <div class="fg"><label>مقدم الشكوى</label><input type="text" id="fSubmitter" placeholder="الاسم أو مجهول"></div>
+    <div class="fg"><label>الصفة <span style="color:red">*</span></label>
+      <select id="fRole"><option value="">— اختر —</option><option>موظف</option><option>عميل</option><option>زائر</option></select>
+    </div>
+    <div class="fg"><label>نوع الإعاقة</label><input type="text" id="fDisability" placeholder="حركية، بصرية..."></div>
+    <div class="fg"><label>درجة الخطورة <span style="color:red">*</span></label>
+      <select id="fSev"><option value="">— اختر —</option><option>منخفضة</option><option>متوسطة</option><option>عالية</option><option>عاجلة</option></select>
+    </div>
+    <div class="fg"><label>مكان الحدوث</label><input type="text" id="fLocation" placeholder="المدخل، الممرات..."></div>
+    <div class="fg"><label>الحالة</label>
+      <select id="fStatusAdd"><option>مفتوحة</option><option>قيد المعالجة</option><option>معلّقة</option><option>مغلقة</option></select>
+    </div>
+    <div class="fg"><label>تاريخ الإغلاق</label><input type="date" id="fCloseDate"></div>
+    <div class="fg"><label>المسؤول عن المعالجة</label><input type="text" id="fHandler" placeholder="اسم المسؤول"></div>
+    <div class="fg full"><label>ملاحظات</label><textarea id="fNotes" rows="2" placeholder="أي ملاحظات إضافية..."></textarea></div>
+  </div>
+  <button class="add-btn" onclick="addComplaint()">حفظ الشكوى في السجل</button>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">✏️ تعديل بيانات الشكوى</div>
+    <input type="hidden" id="editId">
+    <div class="form-grid">
+      <div class="fg"><label>موضوع الشكوى</label>
+        <select id="eCat"><option>إمكانية الوصول والمرافق</option><option>تعامل الموظفين</option><option>التسهيلات والأجهزة المساعدة</option><option>التواصل والمعلومات</option><option>التمييز أو الإقصاء</option><option>جودة الخدمة المقدمة</option><option>بيئة العمل والسلامة</option><option>أخرى</option></select>
+      </div>
+      <div class="fg"><label>الحالة</label>
+        <select id="eStatus"><option>مفتوحة</option><option>قيد المعالجة</option><option>معلّقة</option><option>مغلقة</option></select>
+      </div>
+      <div class="fg"><label>درجة الخطورة</label>
+        <select id="eSev"><option>منخفضة</option><option>متوسطة</option><option>عالية</option><option>عاجلة</option></select>
+      </div>
+      <div class="fg"><label>المسؤول عن المعالجة</label><input type="text" id="eHandler"></div>
+      <div class="fg"><label>تاريخ الإغلاق</label><input type="date" id="eCloseDate"></div>
+      <div class="fg full"><label>ملاحظات</label><textarea id="eNotes" rows="3"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+      <button class="btn-save" onclick="saveEdit()">💾 حفظ التعديلات</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /appContent -->
+
+<script>
+// ==== إعداد الربط بجدول Google Sheets ====
+// 1) الصقي هنا رابط تطبيق الويب (نفس الرابط المستخدَم في نموذج التسجيل)
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbykvKNo7ykLkE_zim2PgSobIY8SmoQu4jB0WDVLDppFCpv6zIRThTxKFXG0GOZyiQ3W/exec";
+// 2) الصقي هنا رابط جدول Google Sheets نفسه (لزر "فتح في Google Sheets")
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1CT6KUjopvhpWhsRppNz6Qpdq9VvMcw3rS6BCBqAeqeQ/edit?gid=0#gid=0";
+// 3) كلمة المرور — يجب أن تطابق SECRET_KEY المكتوبة في كود Apps Script بالضبط
+const ACCESS_KEY = "CoastlineComplaints2026";
+
+let complaints = [];
+
+// ---- حماية الدخول ----
+function tryUnlock() {
+  const val = document.getElementById('lockPass').value;
+  if (val === ACCESS_KEY) {
+    sessionStorage.setItem('coastline_unlocked', '1');
+    unlockApp();
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+  }
+}
+function unlockApp() {
+  document.getElementById('lockOverlay').style.display = 'none';
+  document.getElementById('appContent').classList.remove('app-hidden');
+  document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+  loadComplaints();
+}
+if (sessionStorage.getItem('coastline_unlocked') === '1') {
+  unlockApp();
+}
+
+// ---- أدوات مساعدة ----
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function sevClass(s) {
+  if(s==='منخفضة') return 'sev-low';
+  if(s==='متوسطة') return 'sev-med';
+  if(s==='عالية') return 'sev-high';
+  if(s==='عاجلة') return 'sev-urgent';
+  return '';
+}
+function statusClass(s) {
+  if(s==='مفتوحة') return 'badge-open';
+  if(s==='قيد المعالجة') return 'badge-progress';
+  if(s==='مغلقة') return 'badge-closed';
+  if(s==='معلّقة') return 'badge-hold';
+  return '';
+}
+
+// ---- تحميل الشكاوى من الجدول المركزي ----
+async function loadComplaints() {
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '<tr class="loading-row"><td colspan="13">⏳ جارٍ تحميل السجل من Google Sheets...</td></tr>';
+  if (!WEBAPP_URL || WEBAPP_URL.indexOf('PASTE_YOUR') !== -1) {
+    body.innerHTML = '<tr class="error-row"><td colspan="13">⚠️ لم يتم إعداد رابط الاتصال بالجدول بعد. راجعي "دليل الإعداد".</td></tr>';
+    return;
+  }
+  try {
+    const res = await fetch(`${WEBAPP_URL}?key=${encodeURIComponent(ACCESS_KEY)}`);
+    const data = await res.json();
+    if (data.error) {
+      body.innerHTML = `<tr class="error-row"><td colspan="13">⚠️ تعذّر تحميل البيانات (${esc(data.error)})</td></tr>`;
+      complaints = [];
+      updateStats();
+      return;
+    }
+    complaints = data.complaints || [];
+  } catch (err) {
+    console.error(err);
+    body.innerHTML = '<tr class="error-row"><td colspan="13">⚠️ تعذّر الاتصال بالسجل المركزي. تحققي من الاتصال بالإنترنت أو رابط الجدول.</td></tr>';
+    return;
+  }
+  renderTable();
+}
+
+function renderTable() {
+  const search = document.getElementById('fSearch').value.toLowerCase();
+  const fStatus = document.getElementById('fStatus').value;
+  const fSev = document.getElementById('fSeverity').value;
+  const fRole = document.getElementById('fRole').value;
+  const fCat = document.getElementById('fCat').value;
+
+  let filtered = complaints.filter(c => {
+    const txt = Object.values(c).join(' ').toLowerCase();
+    return (!search || txt.includes(search))
+      && (!fStatus || c.status === fStatus)
+      && (!fSev || c.severity === fSev)
+      && (!fRole || c.role === fRole)
+      && (!fCat || c.category === fCat);
+  });
+
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  document.getElementById('emptyState').style.display = filtered.length ? 'none' : 'block';
+  document.getElementById('resultCount').textContent = `عرض ${filtered.length} من ${complaints.length}`;
+
+  filtered.forEach(c => {
+    const tr = document.createElement('tr');
+    const refSafe = esc(c.ref).replace(/'/g, "\\'");
+    tr.innerHTML = `
+      <td class="num">${esc(c.ref)}</td>
+      <td>${esc(c.date)}</td>
+      <td style="max-width:160px">${esc(c.category)}</td>
+      <td>${esc(c.submitter)||'—'}</td>
+      <td>${esc(c.role)}</td>
+      <td>${esc(c.disability)||'—'}</td>
+      <td><span class="sev ${sevClass(c.severity)}">${esc(c.severity)}</span></td>
+      <td>${esc(c.location)||'—'}</td>
+      <td><span class="badge ${statusClass(c.status)}">${esc(c.status)}</span></td>
+      <td>${esc(c.closeDate)||'—'}</td>
+      <td>${esc(c.handler)||'—'}</td>
+      <td style="max-width:160px;font-size:12px;color:var(--gray)">${esc(c.notes)||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="act-btn act-edit" onclick="openEdit('${refSafe}')">✏️ تعديل</button>
+        <button class="act-btn act-del" onclick="deleteC('${refSafe}')">🗑️</button>
+      </td>`;
+    body.appendChild(tr);
+  });
+
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = complaints.length;
+  document.getElementById('statOpen').textContent = complaints.filter(c=>c.status==='مفتوحة').length;
+  document.getElementById('statProgress').textContent = complaints.filter(c=>c.status==='قيد المعالجة').length;
+  document.getElementById('statClosed').textContent = complaints.filter(c=>c.status==='مغلقة').length;
+  document.getElementById('statHold').textContent = complaints.filter(c=>c.status==='معلّقة').length;
+  document.getElementById('statUrgent').textContent = complaints.filter(c=>c.severity==='عاجلة').length;
+}
+
+// ---- إضافة شكوى يدويًا (مكالمة هاتفية / حضورية) ----
+async function addComplaint() {
+  const cat = document.getElementById('fCategory').value;
+  const role = document.getElementById('fRole').value;
+  const sev = document.getElementById('fSev').value;
+  const date = document.getElementById('fDate').value;
+
+  if(!cat||!role||!sev||!date) {
+    alert('يرجى تعبئة الحقول الإلزامية: التاريخ، الموضوع، الصفة، الخطورة');
+    return;
+  }
+
+  const addBtn = document.querySelector('.add-btn');
+  addBtn.disabled = true;
+  addBtn.textContent = 'جارٍ الحفظ...';
+
+  const payload = {
+    action: 'create',
+    date,
+    category: cat,
+    submitter: document.getElementById('fSubmitter').value,
+    role,
+    disability: document.getElementById('fDisability').value,
+    severity: sev,
+    location: document.getElementById('fLocation').value,
+    status: document.getElementById('fStatusAdd').value,
+    closeDate: document.getElementById('fCloseDate').value,
+    handler: document.getElementById('fHandler').value,
+    notes: document.getElementById('fNotes').value,
+    incidentDate: '',
+    contact: '',
+    suggestion: '',
+    anonymous: '',
+    replyMethod: '',
+    source: 'إدخال يدوي — سجل المتابعة',
+  };
+
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'فشل الحفظ');
+    await loadComplaints();
+    clearForm();
+    window.scrollTo({top:0,behavior:'smooth'});
+  } catch (err) {
+    alert('تعذّر حفظ الشكوى في السجل المركزي: ' + err.message);
+  } finally {
+    addBtn.disabled = false;
+    addBtn.textContent = 'حفظ الشكوى في السجل';
+  }
+}
+
+function clearForm() {
+  ['fCategory','fSubmitter','fRole','fDisability','fSev','fLocation','fCloseDate','fHandler','fNotes'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.tagName==='SELECT') el.selectedIndex=0;
+    else el.value='';
+  });
+  document.getElementById('fDate').value = new Date().toISOString().slice(0,10);
+}
+
+// ---- حذف شكوى ----
+async function deleteC(ref) {
+  if(!confirm('هل تريدين حذف هذه الشكوى نهائيًا من الجدول؟')) return;
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'delete', key: ACCESS_KEY, ref }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'فشل الحذف');
+    await loadComplaints();
+  } catch (err) {
+    alert('تعذّر حذف الشكوى: ' + err.message);
+  }
+}
+
+// ---- تعديل شكوى (الحالة، الخطورة، المسؤول، تاريخ الإغلاق، ملاحظات) ----
+function openEdit(ref) {
+  const c = complaints.find(x=>x.ref===ref);
+  if(!c) return;
+  document.getElementById('editId').value = ref;
+  document.getElementById('eCat').value = c.category;
+  document.getElementById('eStatus').value = c.status;
+  document.getElementById('eSev').value = c.severity;
+  document.getElementById('eHandler').value = c.handler||'';
+  document.getElementById('eCloseDate').value = c.closeDate||'';
+  document.getElementById('eNotes').value = c.notes||'';
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('editModal').classList.remove('active'); }
+
+async function saveEdit() {
+  const ref = document.getElementById('editId').value;
+  const saveBtn = document.querySelector('.btn-save');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'جارٍ الحفظ...';
+
+  const payload = {
+    action: 'update',
+    key: ACCESS_KEY,
+    ref,
+    category: document.getElementById('eCat').value,
+    status: document.getElementById('eStatus').value,
+    severity: document.getElementById('eSev').value,
+    handler: document.getElementById('eHandler').value,
+    closeDate: document.getElementById('eCloseDate').value,
+    notes: document.getElementById('eNotes').value,
+  };
+
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'فشل التحديث');
+    closeModal();
+    await loadComplaints();
+  } catch (err) {
+    alert('تعذّر حفظ التعديلات: ' + err.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 حفظ التعديلات';
+  }
+}
+
+function resetFilters() {
+  ['fSearch','fStatus','fSeverity','fRole','fCat'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.tagName==='SELECT') el.selectedIndex=0;
+    else el.value='';
+  });
+  renderTable();
+}
+
+function scrollToAdd() { document.getElementById('addSection').scrollIntoView({behavior:'smooth'}); }
+
+function exportCSV() {
+  const hdrs = ['رقم الشكوى','التاريخ','الموضوع','مقدم الشكوى','الصفة','نوع الإعاقة','الخطورة','المكان','الحالة','تاريخ الإغلاق','المسؤول','ملاحظات'];
+  const rows = complaints.map(c=>[c.ref,c.date,c.category,c.submitter,c.role,c.disability,c.severity,c.location,c.status,c.closeDate,c.handler,c.notes].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = '﻿' + hdrs.join(',') + '\n' + rows.join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `شكاوى_ذوي_الهمم_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function exportGoogleSheets() {
+  if (SHEET_URL && SHEET_URL.indexOf('PASTE_YOUR') === -1) {
+    window.open(SHEET_URL, '_blank');
+  } else {
+    alert('لم يتم إعداد رابط الجدول بعد. راجعي "دليل الإعداد" لإضافة رابط Google Sheets.');
+  }
+}
+</script>
+</body>
+</html>
