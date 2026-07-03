@@ -290,6 +290,37 @@ function genRefFallback() {
 
 document.getElementById('refNum').textContent = 'سيُصدَر عند الإرسال';
 
+// إرسال طلب GET عبر نموذج مخفي داخل iframe — يتجاوز قيود fetch/CORS
+// على بعض متصفحات آيفون، لأنه يُعامَل كتصفح عادي وليس كطلب برمجي.
+function submitViaHiddenForm(url) {
+  return new Promise((resolve) => {
+    let iframe = document.getElementById('hiddenSubmitFrame');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.id = 'hiddenSubmitFrame';
+      iframe.name = 'hiddenSubmitFrame';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+    }
+    const form = document.createElement('form');
+    form.method = 'GET';
+    form.action = url.split('?')[0];
+    form.target = 'hiddenSubmitFrame';
+    const params = new URLSearchParams(url.split('?')[1] || '');
+    params.forEach((value, key) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    setTimeout(resolve, 1200);
+  });
+}
+
 async function submitComplaint() {
   const submitBtn = document.querySelector('.submit-btn');
   const name       = document.getElementById('name').value;
@@ -352,11 +383,12 @@ async function submitComplaint() {
         errDetail = 'رد الخادم: ' + JSON.stringify(data);
       }
     } catch (err) {
-      console.error('محاولة القراءة العادية فشلت، تجربة إرسال بديل:', err);
-      // بعض متصفحات آيفون تمنع قراءة الرد من هذا النطاق حتى لو الطلب نفسه وصل بنجاح.
-      // نعيد الإرسال بوضع "fire-and-forget" بدون محاولة قراءة الرد، لضمان وصول البيانات.
+      console.error('محاولة القراءة العادية فشلت، تجربة إرسال بديل عبر نموذج مخفي:', err);
+      // بعض متصفحات آيفون تمنع طلبات fetch لهذا النطاق كلياً (حتى no-cors).
+      // نستخدم إرسال نموذج (form submit) عبر iframe مخفي، وهو نفس آلية فتح رابط عادي
+      // ولا تخضع لنفس القيود، فتضمن وصول البيانات حتى لو تعذّرت قراءة الرد.
       try {
-        await fetch(fullUrl, { method: 'GET', mode: 'no-cors' });
+        await submitViaHiddenForm(fullUrl);
         beaconSent = true;
       } catch (err2) {
         errDetail = (err2 && err2.message) ? err2.message : String(err2);
