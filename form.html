@@ -335,10 +335,12 @@ async function submitComplaint() {
   };
 
   let errDetail = '';
+  let beaconSent = false;
   if (WEBAPP_URL && WEBAPP_URL.indexOf('PASTE_YOUR') === -1) {
+    const qs = new URLSearchParams({ action: 'create', ...payload }).toString();
+    const fullUrl = WEBAPP_URL + '?' + qs;
     try {
-      const qs = new URLSearchParams({ action: 'create', ...payload }).toString();
-      const res = await fetch(WEBAPP_URL + '?' + qs, { method: 'GET' });
+      const res = await fetch(fullUrl, { method: 'GET' });
       const rawText = await res.text();
       let data;
       try { data = JSON.parse(rawText); }
@@ -350,8 +352,15 @@ async function submitComplaint() {
         errDetail = 'رد الخادم: ' + JSON.stringify(data);
       }
     } catch (err) {
-      console.error('تعذّر الحفظ في سجل المتابعة المركزي:', err);
-      errDetail = (err && err.message) ? err.message : String(err);
+      console.error('محاولة القراءة العادية فشلت، تجربة إرسال بديل:', err);
+      // بعض متصفحات آيفون تمنع قراءة الرد من هذا النطاق حتى لو الطلب نفسه وصل بنجاح.
+      // نعيد الإرسال بوضع "fire-and-forget" بدون محاولة قراءة الرد، لضمان وصول البيانات.
+      try {
+        await fetch(fullUrl, { method: 'GET', mode: 'no-cors' });
+        beaconSent = true;
+      } catch (err2) {
+        errDetail = (err2 && err2.message) ? err2.message : String(err2);
+      }
     }
   }
 
@@ -361,7 +370,7 @@ async function submitComplaint() {
   body += `${'='.repeat(50)}\n\n`;
   body += `رقم الشكوى المرجعي: ${REF}\n`;
   body += `تاريخ التسجيل: ${new Date().toLocaleDateString('ar-SA')}\n`;
-  body += savedToSheet ? `الحفظ في السجل المركزي: تم بنجاح ✅\n\n` : `الحفظ في السجل المركزي: لم يتم — يرجى إضافتها يدويًا ⚠️\n\n`;
+  body += savedToSheet ? `الحفظ في السجل المركزي: تم بنجاح ✅\n\n` : (beaconSent ? `الحفظ في السجل المركزي: أُرسل، بانتظار التأكيد\n\n` : `الحفظ في السجل المركزي: لم يتم — يرجى إضافتها يدويًا ⚠️\n\n`);
   body += `─── بيانات مقدم الشكوى ───\n`;
   body += `الاسم: ${name || 'مجهول الهوية'}\n`;
   body += `التواصل: ${contact || 'لم يُذكر'}\n`;
@@ -387,7 +396,13 @@ async function submitComplaint() {
     document.getElementById('complaintForm').style.display = 'none';
     document.getElementById('successDiv').style.display = 'block';
     document.getElementById('successRef').textContent = REF;
-    if (!savedToSheet) {
+    if (!savedToSheet && beaconSent) {
+      const note = document.createElement('div');
+      note.style.cssText = 'margin-top:14px;padding:12px;background:#E8F0FE;border:1.5px solid #1A5276;border-radius:10px;font-size:13px;color:#1A5276;font-weight:700';
+      note.textContent = 'أُرسل طلبك إلى السجل المركزي، لكن هذا الجهاز لا يستطيع تأكيد نجاح الحفظ فوراً. الرقم أعلاه رقم مرجعي مؤقت لك؛ الرقم الرسمي الظاهر في السجل نفسه قد يختلف بسيط عنه.';
+      note.style.whiteSpace = 'pre-wrap';
+      document.getElementById('successDiv').appendChild(note);
+    } else if (!savedToSheet && !beaconSent) {
       const warn = document.createElement('div');
       warn.style.cssText = 'margin-top:14px;padding:12px;background:#FFF3E0;border:1.5px solid #E65100;border-radius:10px;font-size:13px;color:#E65100;font-weight:700';
       warn.textContent = 'تعذّر الحفظ التلقائي في السجل المركزي — يرجى التأكد من وصول البريد الإلكتروني للمتابعة اليدوية.' + (errDetail ? ('\n\nتفاصيل الخطأ: ' + errDetail) : '');
