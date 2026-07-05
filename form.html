@@ -54,7 +54,6 @@ function submitComplaint() {
   const qs = new URLSearchParams(payload).toString();
 
   // انتقال مباشر وكامل لرابط الخادم — نفس فتح رابط عادي بالضبط
-  // (مضمون العمل 100% على كل الأجهزة، بلا أي اتصال خلفي قابل للحجب)
   window.location.href = WEBAPP_URL + '?' + qs;
 }
 </script>
