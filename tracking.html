@@ -290,6 +290,8 @@ const SHEET_URL = "https://docs.google.com/spreadsheets/d/1CT6KUjopvhpWhsRppNz6Q
 const ACCESS_KEY = "CoastlineComplaints2026";
 
 let complaints = [];
+let loadTimeoutId = null;
+let loadMessageHandler = null;
 
 // ---- حماية الدخول ----
 function tryUnlock() {
@@ -333,9 +335,6 @@ function statusClass(s) {
 // ---- تحميل الشكاوى من الجدول المركزي ----
 // يعتمد على iframe مخفي + postMessage بدل fetch — أكثر موثوقية عبر
 // الشبكات المختلفة (يعمل كتنقّل حقيقي، لا يُحجب مثل الطلبات الخلفية)
-let loadTimeoutId = null;
-let loadMessageHandler = null;
-
 function loadComplaints() {
   const body = document.getElementById('tableBody');
   body.innerHTML = '<tr class="loading-row"><td colspan="13">⏳ جارٍ تحميل السجل من Google Sheets...</td></tr>';
@@ -345,7 +344,6 @@ function loadComplaints() {
     return;
   }
 
-  // تنظيف أي محاولة سابقة معلّقة
   if (loadMessageHandler) window.removeEventListener('message', loadMessageHandler);
   if (loadTimeoutId) clearTimeout(loadTimeoutId);
   const oldFrame = document.getElementById('dataLoaderFrame');
@@ -445,7 +443,7 @@ function updateStats() {
   document.getElementById('statUrgent').textContent = complaints.filter(c=>c.severity==='عاجلة').length;
 }
 
-// ---- إضافة شكوى يدويًا (مكالمة هاتفية / حضورية) ----
+// ---- إضافة شكوى يدويا (مكالمة هاتفية / حضورية) ----
 async function addComplaint() {
   const cat = document.getElementById('fCategory').value;
   const role = document.getElementById('fRole').value;
