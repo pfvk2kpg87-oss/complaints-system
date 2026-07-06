@@ -285,11 +285,8 @@ td.num{font-weight:700;color:var(--blue);font-family:monospace;direction:ltr;tex
 
 <script>
 // ==== إعداد الربط بجدول Google Sheets ====
-// 1) الصقي هنا رابط تطبيق الويب (نفس الرابط المستخدَم في نموذج التسجيل)
 const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbykvKNo7ykLkE_zim2PgSobIY8SmoQu4jB0WDVLDppFCpv6zIRThTxKFXG0GOZyiQ3W/exec";
-// 2) الصقي هنا رابط جدول Google Sheets نفسه (لزر "فتح في Google Sheets")
 const SHEET_URL = "https://docs.google.com/spreadsheets/d/1CT6KUjopvhpWhsRppNz6Qpdq9VvMcw3rS6BCBqAeqeQ/edit?gid=0#gid=0";
-// 3) كلمة المرور — يجب أن تطابق SECRET_KEY المكتوبة في كود Apps Script بالضبط
 const ACCESS_KEY = "CoastlineComplaints2026";
 
 let complaints = [];
@@ -334,29 +331,62 @@ function statusClass(s) {
 }
 
 // ---- تحميل الشكاوى من الجدول المركزي ----
-async function loadComplaints() {
+// يعتمد على iframe مخفي + postMessage بدل fetch — أكثر موثوقية عبر
+// الشبكات المختلفة (يعمل كتنقّل حقيقي، لا يُحجب مثل الطلبات الخلفية)
+let loadTimeoutId = null;
+let loadMessageHandler = null;
+
+function loadComplaints() {
   const body = document.getElementById('tableBody');
   body.innerHTML = '<tr class="loading-row"><td colspan="13">⏳ جارٍ تحميل السجل من Google Sheets...</td></tr>';
+
   if (!WEBAPP_URL || WEBAPP_URL.indexOf('PASTE_YOUR') !== -1) {
     body.innerHTML = '<tr class="error-row"><td colspan="13">⚠️ لم يتم إعداد رابط الاتصال بالجدول بعد. راجعي "دليل الإعداد".</td></tr>';
     return;
   }
-  try {
-    const res = await fetch(`${WEBAPP_URL}?key=${encodeURIComponent(ACCESS_KEY)}`);
-    const data = await res.json();
-    if (data.error) {
-      body.innerHTML = `<tr class="error-row"><td colspan="13">⚠️ تعذّر تحميل البيانات (${esc(data.error)})</td></tr>`;
+
+  // تنظيف أي محاولة سابقة معلّقة
+  if (loadMessageHandler) window.removeEventListener('message', loadMessageHandler);
+  if (loadTimeoutId) clearTimeout(loadTimeoutId);
+  const oldFrame = document.getElementById('dataLoaderFrame');
+  if (oldFrame) oldFrame.remove();
+
+  let finished = false;
+
+  loadTimeoutId = setTimeout(() => {
+    if (finished) return;
+    finished = true;
+    body.innerHTML = '<tr class="error-row"><td colspan="13">⚠️ تعذّر تحميل البيانات (انتهت المهلة). تحققي من الاتصال بالإنترنت ثم أعيدي المحاولة.</td></tr>';
+    window.removeEventListener('message', loadMessageHandler);
+    const f = document.getElementById('dataLoaderFrame');
+    if (f) f.remove();
+  }, 20000);
+
+  loadMessageHandler = function (event) {
+    if (!event.data || event.data.type !== 'complaintsData') return;
+    if (finished) return;
+    finished = true;
+    clearTimeout(loadTimeoutId);
+    window.removeEventListener('message', loadMessageHandler);
+
+    if (event.data.payload && event.data.payload.error) {
+      body.innerHTML = `<tr class="error-row"><td colspan="13">⚠️ تعذّر تحميل البيانات (${esc(event.data.payload.error)})</td></tr>`;
       complaints = [];
       updateStats();
-      return;
+    } else {
+      complaints = (event.data.payload && event.data.payload.complaints) || [];
+      renderTable();
     }
-    complaints = data.complaints || [];
-  } catch (err) {
-    console.error(err);
-    body.innerHTML = '<tr class="error-row"><td colspan="13">⚠️ تعذّر الاتصال بالسجل المركزي. تحققي من الاتصال بالإنترنت أو رابط الجدول.</td></tr>';
-    return;
-  }
-  renderTable();
+    const f = document.getElementById('dataLoaderFrame');
+    if (f) f.remove();
+  };
+  window.addEventListener('message', loadMessageHandler);
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'dataLoaderFrame';
+  iframe.style.display = 'none';
+  iframe.src = WEBAPP_URL + '?key=' + encodeURIComponent(ACCESS_KEY);
+  document.body.appendChild(iframe);
 }
 
 function renderTable() {
@@ -460,7 +490,7 @@ async function addComplaint() {
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'فشل الحفظ');
-    await loadComplaints();
+    loadComplaints();
     clearForm();
     window.scrollTo({top:0,behavior:'smooth'});
   } catch (err) {
@@ -491,7 +521,7 @@ async function deleteC(ref) {
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'فشل الحذف');
-    await loadComplaints();
+    loadComplaints();
   } catch (err) {
     alert('تعذّر حذف الشكوى: ' + err.message);
   }
@@ -540,7 +570,7 @@ async function saveEdit() {
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'فشل التحديث');
     closeModal();
-    await loadComplaints();
+    loadComplaints();
   } catch (err) {
     alert('تعذّر حفظ التعديلات: ' + err.message);
   } finally {
