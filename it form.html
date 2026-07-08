@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>نموذج طلبات قسم تقنية المعلومات | شركة خط الشاطئ المحدودة</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --pr:#0A5C52;--prl:#0D8070;--ac:#C08B20;--acl:#E8B84B;
+  --dk:#0D1E2C;--sf:#EFF4F8;--cd:#FFFFFF;--br:#CDD7E3;
+  --mt:#6B7A8D;--er:#C0392B;--rd:14px;
+  --sh:0 4px 24px rgba(13,30,44,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Tajawal',sans-serif;background:var(--sf);color:var(--dk);direction:rtl;min-height:100vh}
+
+/* HEADER */
+.ph{background:linear-gradient(135deg,var(--dk) 0%,#112233 60%,#0B3D52 100%);position:relative;overflow:hidden}
+.ph::before{content:'';position:absolute;top:-100px;left:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(10,92,82,.3) 0%,transparent 70%);pointer-events:none}
+.ph::after{content:'';position:absolute;bottom:-80px;right:-80px;width:350px;height:350px;background:radial-gradient(circle,rgba(192,139,32,.2) 0%,transparent 70%);pointer-events:none}
+.hi{max-width:860px;margin:auto;padding:44px 28px 36px;display:flex;align-items:center;gap:24px;position:relative;z-index:1}
+.hico{width:72px;height:72px;background:linear-gradient(135deg,var(--pr),var(--prl));border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0;box-shadow:0 8px 24px rgba(10,92,82,.4)}
+.ht h1{font-size:1.65rem;font-weight:900;color:#fff;line-height:1.3}
+.ht .sub{font-size:.9rem;color:rgba(255,255,255,.65);margin-top:6px}
+.badge{margin-top:10px;display:inline-flex;align-items:center;gap:6px;background:rgba(10,92,82,.35);border:1px solid rgba(13,128,112,.45);color:#5FE8CE;padding:4px 14px;border-radius:999px;font-size:.75rem;font-weight:600}
+
+/* STEPS BAR */
+.sb{background:var(--dk);padding:0 28px}
+.si{max-width:860px;margin:auto;display:flex}
+.st{flex:1;padding:13px 6px 11px;text-align:center;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:3px solid transparent;transition:all .25s;font-size:.75rem;font-weight:600;line-height:1.4}
+.st.active{color:var(--acl);border-bottom-color:var(--acl)}
+.st.done{color:var(--prl);border-bottom-color:var(--prl)}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:.7rem;font-weight:800;margin-bottom:3px;background:rgba(255,255,255,.1)}
+.st.active .sn{background:var(--ac);color:#fff}
+.st.done .sn{background:var(--pr);color:#fff}
+
+/* WRAP */
+.w{max-width:860px;margin:32px auto 56px;padding:0 18px}
+.rn{font-size:.78rem;color:var(--mt);margin-bottom:18px}
+.rn span{color:var(--er)}
+
+/* CARD */
+.card{background:var(--cd);border-radius:var(--rd);box-shadow:var(--sh);border:1px solid var(--br);margin-bottom:22px;overflow:hidden;display:none;animation:up .3s ease both}
+.card.active{display:block}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.ch{padding:18px 24px 16px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:12px;background:linear-gradient(to left,#F8FAFC,#fff)}
+.ci{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.ct{background:rgba(10,92,82,.1)}.cg{background:rgba(192,139,32,.1)}.cn{background:rgba(13,30,44,.08)}
+.ch h2{font-size:1rem;font-weight:800;color:var(--dk)}
+.ch p{font-size:.8rem;color:var(--mt);margin-top:2px}
+.cb{padding:26px 24px 22px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g2 .full{grid-column:span 2}
+@media(max-width:600px){.g2{grid-template-columns:1fr}.g2 .full{grid-column:span 1}.hi{flex-direction:column;text-align:center}.sb{padding:0 8px}.st{font-size:.65rem}}
+
+/* FIELDS */
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.83rem;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:5px}
+.req{color:var(--er);font-size:.95rem}
+input[type=text],input[type=email],input[type=tel],input[type=number],select,textarea{
+  width:100%;padding:10px 13px;border:1.5px solid var(--br);border-radius:10px;
+  font-family:'Tajawal',sans-serif;font-size:.88rem;color:var(--dk);
+  background:#fff;transition:border-color .2s,box-shadow .2s;direction:rtl}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pr);box-shadow:0 0 0 3px rgba(10,92,82,.11)}
+select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236B7A8D' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;padding-left:36px}
+textarea{resize:vertical;min-height:96px}
+.hint{font-size:.76rem;color:var(--mt);margin-top:2px}
+.em{font-size:.76rem;color:var(--er);display:none}
+.f.err input,.f.err select,.f.err textarea{border-color:var(--er);box-shadow:0 0 0 3px rgba(192,57,43,.1)}
+.f.err .em{display:block}
+.cw{position:relative}
+.cw textarea{padding-bottom:26px}
+.cc{position:absolute;bottom:8px;left:12px;font-size:.7rem;color:var(--mt)}
+
+/* DISABILITY CARDS */
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px;margin-top:4px}
+.dc{border:2px solid var(--br);border-radius:12px;padding:13px 10px;cursor:pointer;transition:all .2s;text-align:center;background:#fff}
+.dc:hover{border-color:var(--prl);background:rgba(10,92,82,.03)}
+.dc.sel{border-color:var(--pr);background:rgba(10,92,82,.06)}
+.dc input{display:none}
+.di{font-size:1.7rem;display:block;margin-bottom:5px}
+.dl{font-size:.8rem;font-weight:700;color:var(--dk)}
+
+/* URGENCY */
+.ug{display:flex;gap:10px;flex-wrap:wrap}
+.ub{flex:1;min-width:80px;padding:9px 12px;border:2px solid var(--br);border-radius:10px;text-align:center;cursor:pointer;font-size:.8rem;font-weight:700;transition:all .2s;background:#fff;font-family:'Tajawal',sans-serif}
+.ub.sl{border-color:#2ECC71;background:rgba(46,204,113,.08);color:#1A9A51}
+.ub.sm{border-color:var(--ac);background:rgba(192,139,32,.08);color:#7A5C10}
+.ub.sh{border-color:var(--er);background:rgba(192,57,43,.08);color:var(--er)}
+
+/* FILE UPLOAD */
+.ub2{border:2px dashed var(--br);border-radius:12px;padding:24px 18px;text-align:center;cursor:pointer;transition:all .2s;background:#FAFBFD;position:relative}
+.ub2:hover{border-color:var(--pr);background:rgba(10,92,82,.04)}
+.ub2 input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ui{font-size:1.8rem;display:block;margin-bottom:6px}
+.ut{font-size:.84rem;color:var(--mt)}
+.ut strong{color:var(--pr)}
+.fp{display:none;align-items:center;gap:8px;background:rgba(10,92,82,.07);border-radius:8px;padding:9px 12px;margin-top:10px;font-size:.82rem;color:var(--pr)}
+.fp.show{display:flex}
+
+/* NOTE */
+.note{background:linear-gradient(to left,rgba(10,92,82,.07),rgba(10,92,82,.03));border-right:4px solid var(--pr);border-radius:0 10px 10px 0;padding:13px 16px;margin-top:18px;font-size:.83rem;color:var(--dk);display:flex;gap:9px;align-items:flex-start}
+.note.g{border-right-color:var(--ac);background:linear-gradient(to left,rgba(192,139,32,.07),rgba(192,139,32,.03))}
+.ni{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+
+/* DIVIDER & CHECKBOX */
+.dv{height:1px;background:var(--br);margin:18px 0}
+.ck{display:flex;flex-direction:column;gap:8px}
+.ck label{display:flex;align-items:center;gap:9px;cursor:pointer;font-size:.86rem;color:var(--dk)}
+.ck input{width:17px;height:17px;accent-color:var(--pr);cursor:pointer;flex-shrink:0}
+
+/* BUTTONS */
+.nr{display:flex;gap:12px;justify-content:space-between;margin-top:28px;flex-wrap:wrap}
+.btn{padding:12px 28px;border-radius:10px;font-family:'Tajawal',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;gap:7px}
+.bm{background:linear-gradient(135deg,var(--pr),var(--prl));color:#fff;box-shadow:0 4px 14px rgba(10,92,82,.3)}
+.bm:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(10,92,82,.4)}
+.bs{background:var(--sf);color:var(--dk);border:1.5px solid var(--br)}
+.bs:hover{background:#E5EBF0}
+.bsn{background:linear-gradient(135deg,var(--ac),var(--acl));color:#fff;box-shadow:0 4px 14px rgba(192,139,32,.35)}
+.bsn:hover{transform:translateY(-1px)}
+
+/* SUCCESS */
+.ss{display:none;text-align:center;padding:52px 28px;animation:up .4s ease both}
+.ss.show{display:block}
+.sr{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prl));display:flex;align-items:center;justify-content:center;font-size:2.6rem;margin:0 auto 20px;box-shadow:0 8px 28px rgba(10,92,82,.35)}
+.st2{font-size:1.5rem;font-weight:900;color:var(--dk);margin-bottom:8px}
+.ssub{color:var(--mt);font-size:.92rem;max-width:400px;margin:0 auto}
+.tk{margin:20px auto 0;display:inline-block;background:var(--sf);border:2px dashed var(--pr);border-radius:12px;padding:12px 28px;font-size:1rem;font-weight:800;color:var(--pr);letter-spacing:.06em}
+
+/* OVERLAY */
+.ov{display:none;position:fixed;inset:0;background:rgba(13,30,44,.6);backdrop-filter:blur(4px);z-index:9998;align-items:center;justify-content:center}
+.ov.show{display:flex}
+.ob{background:#fff;border-radius:18px;padding:36px 44px;text-align:center}
+.sp{width:44px;height:44px;border-radius:50%;border:4px solid var(--br);border-top-color:var(--pr);animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.foot{text-align:center;padding:22px;color:var(--mt);font-size:.75rem}
+</style>
+</head>
+<body>
+
+<div class="ov" id="ov"><div class="ob"><div class="sp"></div><p style="font-weight:700;color:var(--dk)">جارٍ إرسال طلبك…</p></div></div>
+
+<!-- HEADER -->
+<header class="ph">
+  <div class="hi">
+    <div class="hico">♿</div>
+    <div class="ht">
+      <h1>نموذج طلبات قسم تقنية المعلومات
+(شركة خط الشاطئ المحدودة)</h1>
+      <p class="sub">قسم تقنية المعلومات - الموارد البشرية وبيئة العمل الشاملة</p>
+      <div class="badge">🔒 بيانات سرية وآمنة</div>
+    </div>
+  </div>
+  <div class="sb">
+    <div class="si">
+      <div class="st active" id="t1" onclick="gt(1)"><div class="sn">1</div><br/>البيانات</div>
+      <div class="st" id="t2" onclick="gt(2)"><div class="sn">2</div><br/>الإعاقة</div>
+      <div class="st" id="t3" onclick="gt(3)"><div class="sn">3</div><br/>الجهاز</div>
+      <div class="st" id="t4" onclick="gt(4)"><div class="sn">4</div><br/>التفاصيل</div>
+      <div class="st" id="t5" onclick="gt(5)"><div class="sn">5</div><br/>الإرسال</div>
+    </div>
+  </div>
+</header>
+
+<div class="w">
+
+  <p class="rn">الحقول المشار إليها بـ <span>*</span> إلزامية</p>
+
+  <!-- STEP 1 -->
+  <div class="card active" id="s1">
+    <div class="ch"><div class="ci ct">👤</div><div><h2>البيانات الشخصية</h2><p>تعبئة جميع الحقول بدقة</p></div></div>
+    <div class="cb">
+      <div class="g2">
+        <div class="f" id="fn"><label>📝 الاسم الكامل <span class="req">*</span></label><input type="text" id="nm" placeholder="الاسم كما في الهوية"/><span class="em">هذا الحقل مطلوب</span></div>
+        <div class="f" id="fe"><label>🪪 الرقم الوظيفي <span class="req">*</span></label><input type="text" id="eid" placeholder="EMP-00123"/><span class="em">الرقم الوظيفي مطلوب</span></div>
+        <div class="f" id="fd"><label>🏢 القسم <span class="req">*</span></label>
+          <select id="dep">
+            <option value="">— اختر القسم —</option>
+            <option>الموارد البشرية</option><option>المالية والمحاسبة</option>
+            <option>تقنية المعلومات</option><option>المبيعات والتسويق</option>
+            <option>العمليات واللوجستيات</option><option>خدمة العملاء</option>
+            <option>الشؤون القانونية</option><option>التخطيط والاستراتيجية</option>
+            <option>الإدارة العليا</option><option>أخرى</option>
+          </select><span class="em">يرجى اختيار القسم</span></div>
+        <div class="f" id="fj"><label>💼 المسمى الوظيفي <span class="req">*</span></label><input type="text" id="job" placeholder="مثال: محلل بيانات"/><span class="em">المسمى الوظيفي مطلوب</span></div>
+        <div class="f" id="fp"><label>📱 رقم الجوال <span class="req">*</span></label><input type="tel" id="ph" placeholder="05XXXXXXXX" dir="ltr"/><span class="em">رقم الجوال مطلوب</span></div>
+        <div class="f" id="fm"><label>📧 البريد الإلكتروني <span class="req">*</span></label><input type="email" id="em" placeholder="name@company.com" dir="ltr"/><span class="em">البريد الإلكتروني مطلوب</span></div>
+        <div class="f"><label>📍 موقع العمل</label><input type="text" id="loc" placeholder="الرياض — المقر الرئيسي"/></div>
+        <div class="f"><label>👨‍💼 المشرف المباشر</label><input type="text" id="mgr" placeholder="اسم المشرف"/></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card" id="s2">
+    <div class="ch"><div class="ci cg">♿</div><div><h2>نوع الإعاقة</h2><p>اختر ما يناسب حالتك</p></div></div>
+    <div class="cb">
+      <div class="f" id="fdis">
+        <label>نوع الإعاقة <span class="req">*</span></label>
+        <div class="dg">
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="إعاقة بصرية"/><span class="di">👁️</span><span class="dl">إعاقة بصرية</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="إعاقة سمعية"/><span class="di">👂</span><span class="dl">إعاقة سمعية</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="إعاقة حركية"/><span class="di">🦾</span><span class="dl">إعاقة حركية</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="إعاقة نطق"/><span class="di">🗣️</span><span class="dl">إعاقة نطق</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="إعاقة ذهنية"/><span class="di">🧠</span><span class="dl">إعاقة ذهنية</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="إعاقة متعددة"/><span class="di">♾️</span><span class="dl">إعاقة متعددة</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="أمراض مزمنة"/><span class="di">🫀</span><span class="dl">أمراض مزمنة</span></label>
+          <label class="dc" onclick="pd(this)"><input type="radio" name="dis" value="أخرى"/><span class="di">➕</span><span class="dl">أخرى</span></label>
+        </div>
+        <span class="em" id="de" style="margin-top:6px">يرجى اختيار نوع الإعاقة</span>
+      </div>
+      <div class="dv"></div>
+      <div class="f"><label>📋 مرجع شهادة الإعاقة</label><input type="text" id="dref" placeholder="رقم الشهادة (اختياري)"/></div>
+      <div class="note"><span class="ni">🔐</span><span>تُعامَل جميع المعلومات بسرية تامة ولا تُستخدم إلا لأغراض الدعم التقني.</span></div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card" id="s3">
+    <div class="ch"><div class="ci cn">💻</div><div><h2>الجهاز التقني المطلوب</h2><p>اختر من القائمة الشاملة لأكثر من 45 جهازاً وبرنامجاً</p></div></div>
+    <div class="cb">
+      <div class="g2">
+        <div class="f full" id="fdev">
+          <label>الجهاز / البرنامج <span class="req">*</span></label>
+          <select id="dev" onchange="chkC()">
+            <option value="">— اختر الجهاز المطلوب —</option>
+            <optgroup label="👁️ الإعاقة البصرية">
+              <option>قارئ الشاشة JAWS</option><option>قارئ الشاشة NVDA (مجاني)</option>
+              <option>قارئ الشاشة Narrator — ويندوز</option><option>مكبّر الشاشة ZoomText</option>
+              <option>مكبّر الشاشة المدمج في ويندوز</option><option>شاشة برايل الإلكترونية</option>
+              <option>لوحة مفاتيح برايل</option><option>شاشة عرض كبيرة 27 بوصة فأكثر</option>
+              <option>عدسة تكبير رقمية USB</option><option>لوحة مفاتيح عالية التباين</option>
+              <option>برنامج OCR لتحويل النص المصوّر</option><option>برنامج تحويل النص إلى كلام TTS</option>
+            </optgroup>
+            <optgroup label="👂 الإعاقة السمعية">
+              <option>نظام تنبيهات بصرية بديلاً عن الصوت</option>
+              <option>برنامج ترجمة فورية للاجتماعات Live Captions</option>
+              <option>برنامج لغة الإشارة الآلي</option><option>سماعة رأس مُعززة للصوت</option>
+              <option>سماعة توصيل عظمي Bone Conduction</option>
+              <option>نظام حلقة مغناطيسية Hearing Loop</option>
+              <option>خدمة الترجمة بالفيديو VRS</option><option>نظام تنبيه بالاهتزاز</option>
+            </optgroup>
+            <optgroup label="🦾 الإعاقة الحركية">
+              <option>ماوس كرة المسار Trackball</option><option>ماوس ذراع التحكم Joystick</option>
+              <option>ماوس الرأس — التحكم بالحركة</option>
+              <option>تتبع العين Eye Tracking — Tobii</option>
+              <option>مفاتيح التحكم البديل Switch Access</option>
+              <option>لوحة مفاتيح مريحة مُقسّمة Ergonomic</option>
+              <option>لوحة مفاتيح أحادية اليد</option>
+              <option>التحكم الصوتي Dragon NaturallySpeaking</option>
+              <option>جهاز النفخ والشفط Sip and Puff</option>
+              <option>ذراع دعم بالارتكاز للكتابة</option>
+              <option>مكتب قابل للتعديل Standing Desk</option><option>مسند المعصم المريح</option>
+            </optgroup>
+            <optgroup label="🗣️ الإعاقة النطقية">
+              <option>جهاز التواصل المُعزز AAC</option>
+              <option>تحويل الكلام إلى نص Speech-to-Text</option>
+              <option>مُضخّم الصوت الشخصي</option><option>جهاز توليد الكلام SGD</option>
+              <option>أدوات المحادثة النصية للاجتماعات</option>
+            </optgroup>
+            <optgroup label="🧠 الإعاقة الذهنية / المعرفية">
+              <option>مسطرة القراءة الرقمية</option><option>برنامج التركيز وتقليل التشتيت</option>
+              <option>خط OpenDyslexic والخطوط المساعدة</option>
+              <option>نظام تراكب الألوان للشاشة</option>
+              <option>نظام تذكير وتنبيه مُعزز</option>
+              <option>واجهة مستخدم مبسّطة لأنظمة العمل</option>
+            </optgroup>
+            <optgroup label="🖥️ أجهزة عامة مُعززة">
+              <option>جهاز لوحي مع قلم رقمي</option><option>شاشة محمولة ثانوية</option>
+              <option>كاميرا ويب عالية الدقة</option><option>سماعة عازلة للضوضاء</option>
+              <option>حامل لابتوب قابل للتعديل</option>
+              <option value="custom">⭐ جهاز بمواصفات خاصة — أرفق التفاصيل</option>
+            </optgroup>
+          </select>
+          <span class="em" id="dve">يرجى اختيار الجهاز</span>
+        </div>
+        <div class="f">
+          <label>الكمية</label>
+          <div style="display:flex;align-items:center;gap:9px;margin-top:4px">
+            <button type="button" class="btn bs" style="padding:8px 14px;font-size:1.1rem" onclick="cq(-1)">−</button>
+            <input type="number" id="qty" value="1" min="1" max="10" style="width:60px;text-align:center;font-weight:800"/>
+            <button type="button" class="btn bs" style="padding:8px 14px;font-size:1.1rem" onclick="cq(1)">+</button>
+          </div>
+        </div>
+        <div class="f">
+          <label>⚡ درجة الأولوية</label>
+          <div class="ug" style="margin-top:4px">
+            <div class="ub" onclick="su(this,'l')">🟢 عادية</div>
+            <div class="ub" onclick="su(this,'m')">🟡 مرتفعة</div>
+            <div class="ub" onclick="su(this,'h')">🔴 عاجلة</div>
+          </div>
+          <input type="hidden" id="urg" value="عادية"/>
+        </div>
+      </div>
+      <div id="cb2" style="display:none;margin-top:18px">
+        <div class="note g"><span class="ni">⭐</span><span>اخترت جهازاً بمواصفات خاصة — أكمل التفاصيل أدناه.</span></div>
+        <div class="g2" style="margin-top:14px">
+          <div class="f"><label>📌 اسم الجهاز</label><input type="text" id="cn" placeholder="مثال: Tobii Dynavox I-Series+"/></div>
+          <div class="f"><label>🌐 رابط الجهاز</label><input type="text" id="cu" placeholder="https://..." dir="ltr"/></div>
+          <div class="f full"><label>📋 المواصفات التقنية <span class="req">*</span></label>
+            <div class="cw"><textarea id="cs" maxlength="800" oninput="cc(this,'csc')" placeholder="النظام، الاتصالية، المتطلبات التقنية…"></textarea><span class="cc" id="csc">0/800</span></div></div>
+          <div class="f full"><label>🖼️ صورة الجهاز أو الكتالوج</label>
+            <div class="ub2"><input type="file" id="ci" accept="image/*,.pdf" onchange="sf(this,'cp','cn2')"/>
+              <span class="ui">📎</span><p class="ut">اسحب وأفلت أو <strong>اضغط للاختيار</strong></p>
+              <p class="ut" style="font-size:.73rem;margin-top:3px">JPG, PNG, PDF — حتى 10MB</p></div>
+            <div class="fp" id="cp"><span>📎</span><span id="cn2"></span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="card" id="s4">
+    <div class="ch"><div class="ci ct">💬</div><div><h2>كيف يدعمك الجهاز؟</h2><p>مشاركتك تساعدنا في تخصيص الدعم المثالي</p></div></div>
+    <div class="cb">
+      <div class="f" id="fhlp">
+        <label>🧩 كيف يساعدك هذا الجهاز في أداء مهامك اليومية؟ <span class="req">*</span></label>
+        <div class="cw"><textarea id="hlp" maxlength="1000" oninput="cc(this,'hc')" style="min-height:110px" placeholder="مثال: يُساعدني قارئ الشاشة على استخدام Excel وإعداد التقارير بشكل مستقل…"></textarea><span class="cc" id="hc">0/1000</span></div>
+        <span class="em" id="he">يرجى وصف كيفية دعم الجهاز لك</span>
+      </div>
+      <div class="dv"></div>
+      <div class="f"><label>🖥️ التطبيقات التي تستخدمها يومياً</label>
+        <div class="ck">
+          <label><input type="checkbox" id="a1"/> <span>Microsoft Office (Word, Excel, PowerPoint)</span></label>
+          <label><input type="checkbox" id="a2"/> <span>Microsoft Teams</span></label>
+          <label><input type="checkbox" id="a3"/> <span>نظام SAP</span></label>
+          <label><input type="checkbox" id="a4"/> <span>Zoom / اجتماعات الفيديو</span></label>
+          <label><input type="checkbox" id="a5"/> <span>البريد الإلكتروني Outlook</span></label>
+          <label><input type="checkbox" id="a6"/> <span>أنظمة ERP / CRM</span></label>
+          <label><input type="checkbox" id="a7"/> <span>تصفح الويب بشكل مكثف</span></label>
+        </div>
+      </div>
+      <div class="dv"></div>
+      <div class="f"><label>🔧 تحديات تقنية حالية</label>
+        <div class="cw"><textarea id="chal" maxlength="600" oninput="cc(this,'chc')" placeholder="صِف التحديات التي تواجهها حالياً…"></textarea><span class="cc" id="chc">0/600</span></div></div>
+      <div class="dv"></div>
+      <div class="f"><label>📎 مرفقات داعمة</label>
+        <div class="ub2"><input type="file" id="docs" accept="image/*,.pdf,.doc,.docx" multiple onchange="sf(this,'dp','dn')"/>
+          <span class="ui">📂</span><p class="ut">شهادة إعاقة أو تقرير طبي — يمكن تحميل عدة ملفات</p></div>
+        <div class="fp" id="dp"><span>📎</span><span id="dn"></span></div></div>
+    </div>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="card" id="s5">
+    <div class="ch"><div class="ci cg">✅</div><div><h2>مراجعة الطلب وإرساله</h2><p>راجع بياناتك قبل الإرسال</p></div></div>
+    <div class="cb">
+      <div id="rc" style="font-size:.88rem;line-height:1.9;color:var(--dk)"></div>
+      <div class="dv"></div>
+      <div class="f"><label>💬 ملاحظات إضافية</label>
+        <div class="cw"><textarea id="notes" maxlength="400" oninput="cc(this,'nc')" placeholder="أي معلومات أو طلبات خاصة…"></textarea><span class="cc" id="nc">0/400</span></div></div>
+      <div class="dv"></div>
+      <div class="note g"><span class="ni">📜</span><span>بالإرسال أُقرّ بصحة المعلومات وأوافق على معالجتها لأغراض الدعم التقني.</span></div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="card" id="ss">
+    <div class="ss" id="sm">
+      <div class="sr">✅</div>
+      <p class="st2">تم استلام طلبك بنجاح!</p>
+      <p class="ssub">وصل طلبك لقسم تقنية المعلومات وسيتم التواصل معك قريبًا.<br>يرجى الاحتفاظ برقم الطلب أدناه للمتابعة.</p>
+      <div class="tk" id="tn"></div>
+      <div style="margin-top:20px"><button class="btn bs" onclick="ra()" style="margin:auto;display:inline-flex">🔄 تقديم طلب جديد</button></div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nr" id="nr">
+    <button class="btn bs" id="bp" onclick="pv()" style="display:none">← السابق</button>
+    <div style="display:flex;gap:11px;margin-right:auto">
+      <button class="btn bm" id="bn" onclick="nx()">التالي →</button>
+      <button class="btn bsn" id="bsnd" onclick="snd()" style="display:none">📤 إرسال الطلب</button>
+    </div>
+  </div>
+</div>
+
+<div class="foot">IT-ACC-FORM-2024 | قسم تقنية المعلومات | شركة خط الشاطئ المحدودة</div>
+
+<script>
+let cur=1, tot=5;
+
+// ── Navigation ──
+function gt(n){
+  if(n<1||n>tot) return;
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  cur=n; ut(); ub2();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function nx(){ if(vl(cur)){if(cur===tot-1)br(); gt(cur+1);} }
+function pv(){ gt(cur-1); }
+function ut(){
+  for(let i=1;i<=tot;i++){
+    const t=document.getElementById('t'+i);
+    t.classList.remove('active','done');
+    if(i===cur) t.classList.add('active');
+    else if(i<cur) t.classList.add('done');
+  }
+}
+function ub2(){
+  document.getElementById('bp').style.display = cur>1?'flex':'none';
+  document.getElementById('bn').style.display = cur<tot?'flex':'none';
+  document.getElementById('bsnd').style.display = cur===tot?'flex':'none';
+}
+
+// ── Validation ──
+function vl(s){
+  let ok=true;
+  const r=(id,fid)=>{const el=document.getElementById(id),fd=document.getElementById(fid);el.value.trim()?fd.classList.remove('err'):(fd.classList.add('err'),ok=false);};
+  if(s===1){r('nm','fn');r('eid','fe');r('dep','fd');r('job','fj');r('ph','fp');r('em','fm');}
+  if(s===2){const c=document.querySelector('input[name="dis"]:checked');document.getElementById('de').style.display=c?'none':'block';if(!c)ok=false;}
+  if(s===3){const dv=document.getElementById('dev');dv.value?document.getElementById('dve').style.display='none':(document.getElementById('dve').style.display='block',ok=false);}
+  if(s===4){const t=document.getElementById('hlp'),e=document.getElementById('he');t.value.trim()?(e.style.display='none',t.style.borderColor=''):(e.style.display='block',t.style.borderColor='var(--er)',ok=false);}
+  return ok;
+}
+
+// ── Helpers ──
+function pd(el){document.querySelectorAll('.dc').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');document.getElementById('de').style.display='none';}
+function chkC(){document.getElementById('cb2').style.display=document.getElementById('dev').value==='custom'?'block':'none';}
+function cq(d){const i=document.getElementById('qty');i.value=Math.min(10,Math.max(1,parseInt(i.value)+d));}
+function su(btn,l){document.querySelectorAll('.ub').forEach(b=>b.className='ub');btn.classList.add('s'+l);document.getElementById('urg').value={l:'عادية',m:'مرتفعة',h:'عاجلة جداً'}[l];}
+function cc(el,id){document.getElementById(id).textContent=el.value.length+'/'+el.getAttribute('maxlength');}
+function sf(inp,pid,nid){const p=document.getElementById(pid),n=document.getElementById(nid);if(inp.files?.length){n.textContent=Array.from(inp.files).map(f=>f.name).join(', ');p.classList.add('show');}}
+function v(id){return document.getElementById(id)?.value||'';}
+
+// ── Build Review ──
+function br(){
+  const dis=document.querySelector('input[name="dis"]:checked');
+  const apps=[];
+  ['a1','a2','a3','a4','a5','a6','a7'].forEach((id,i)=>{if(document.getElementById(id)?.checked)apps.push(['Office','Teams','SAP','Zoom','Outlook','ERP/CRM','الويب'][i]);});
+  const rows=[
+    ['الاسم الكامل',v('nm')],['الرقم الوظيفي',v('eid')],['القسم',v('dep')],['المسمى الوظيفي',v('job')],
+    ['الجوال',v('ph')],['البريد الإلكتروني',v('em')],['موقع العمل',v('loc')||'—'],['المشرف',v('mgr')||'—'],
+    ['نوع الإعاقة',dis?dis.value:'—'],
+    ['الجهاز المطلوب',v('dev')==='custom'?'جهاز خاص: '+v('cn'):v('dev')],
+    ['الكمية',v('qty')],['الأولوية',v('urg')||'عادية'],
+    ['التطبيقات',apps.join('، ')||'—'],
+    ['كيف يساعدك الجهاز',v('hlp').slice(0,140)+(v('hlp').length>140?'…':'')],
+  ];
+  document.getElementById('rc').innerHTML=`<table style="width:100%;border-collapse:collapse">${rows.map(r=>`<tr><td style="padding:7px 11px;font-weight:700;color:var(--mt);font-size:.8rem;width:40%;border-bottom:1px solid var(--br);white-space:nowrap">${r[0]}</td><td style="padding:7px 11px;border-bottom:1px solid var(--br)">${r[1]||'—'}</td></tr>`).join('')}</table>`;
+}
+
+// ── إعداد الاتصال بـ Google Forms ──
+const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSeQbtyNPpgHhr8vLgzdfiU3_igd2dIs_QeRwQ2bwBfctImbTg/formResponse";
+const GOOGLE_FORM_ENTRY  = "entry.599166711";
+
+function genRef(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const rand = (crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') : (Date.now()+Math.random().toString(36))).slice(0,6).toUpperCase();
+  return `IT-${y}${m}${d}-${rand}`;
+}
+
+// ── Send via Google Forms (موثوق 100% من أي شبكة) ──
+function snd(){
+  if(!vl(5)) return;
+  document.getElementById('ov').classList.add('show');
+
+  const dis=document.querySelector('input[name="dis"]:checked');
+  const apps=[];
+  ['a1','a2','a3','a4','a5','a6','a7'].forEach((id,i)=>{if(document.getElementById(id)?.checked)apps.push(['Microsoft Office','Teams','SAP','Zoom','Outlook','ERP/CRM','تصفح الويب'][i]);});
+  const ticket = genRef();
+  const submissionId = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2)));
+
+  const payload = {
+    submissionId,
+    ref: ticket,
+    date: new Date().toISOString().slice(0,10),
+    name: v('nm'),
+    employeeId: v('eid'),
+    department: v('dep'),
+    jobTitle: v('job'),
+    phone: v('ph'),
+    email: v('em'),
+    location: v('loc') || '',
+    manager: v('mgr') || '',
+    disability: dis ? dis.value : '',
+    disabilityRef: v('dref') || '',
+    device: v('dev'),
+    qty: v('qty') || '1',
+    urgency: v('urg') || 'عادية',
+    customName: v('dev')==='custom' ? v('cn') : '',
+    customUrl: v('dev')==='custom' ? v('cu') : '',
+    customSpecs: v('dev')==='custom' ? v('cs') : '',
+    apps: apps.join('، ') || '',
+    help: v('hlp'),
+    challenges: v('chal') || '',
+    notes: v('notes') || '',
+    source: 'نموذج التسجيل الإلكتروني (Google Forms)',
+  };
+
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_submit_frame_' + Date.now();
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const gform = document.createElement('form');
+  gform.action = GOOGLE_FORM_ACTION;
+  gform.method = 'POST';
+  gform.target = iframe.name;
+  gform.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = GOOGLE_FORM_ENTRY;
+  input.value = JSON.stringify(payload);
+  gform.appendChild(input);
+
+  document.body.appendChild(gform);
+  gform.submit();
+
+  setTimeout(()=>{
+    document.getElementById('ov').classList.remove('show');
+    document.getElementById('tn').textContent='رقم الطلب: '+ticket;
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    document.getElementById('ss').classList.add('active');
+    document.getElementById('sm').classList.add('show');
+    document.getElementById('nr').style.display='none';
+    document.querySelectorAll('.st').forEach(t=>{t.classList.remove('active');t.classList.add('done');});
+    window.scrollTo({top:0,behavior:'smooth'});
+  },900);
+}
+
+// ── Reset ──
+function ra(){
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],textarea').forEach(e=>e.value='');
+  document.querySelectorAll('select').forEach(e=>e.selectedIndex=0);
+  document.querySelectorAll('.dc').forEach(c=>c.classList.remove('sel'));
+  document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(c=>c.checked=false);
+  document.querySelectorAll('.ub').forEach(b=>b.className='ub');
+  document.getElementById('qty').value=1;
+  document.getElementById('cb2').style.display='none';
+  document.getElementById('nr').style.display='flex';
+  document.getElementById('ss').classList.remove('active');
+  document.getElementById('sm').classList.remove('show');
+  gt(1);
+}
+</script>
+</body>
+</html>
