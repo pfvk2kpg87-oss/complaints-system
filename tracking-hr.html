@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجل متابعة الطلبات التيسيرية | Coastline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+:root {
+  --navy:#1F3864; --blue:#2E6DA4; --light:#BDD7EE; --lighter:#EBF3FB;
+  --white:#fff; --dark:#1E1E1E; --gray:#666; --border:#d0e4f4;
+  --green:#2E7D32; --lgreen:#E8F5E9; --orange:#E65100; --lorange:#FFF3E0;
+  --red:#C62828; --lred:#FFEBEE; --purple:#6A1B9A; --lpurple:#F3E5F5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Tajawal',Arial,sans-serif;background:#f0f4f8;min-height:100vh;}
+
+.topbar{background:var(--navy);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(31,56,100,.3);}
+.topbar-title{font-size:18px;font-weight:800;color:var(--white);}
+.topbar-sub{font-size:11px;color:var(--light);direction:ltr;}
+.topbar-actions{display:flex;gap:10px;}
+.btn{padding:8px 16px;border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+.btn-export{background:rgba(255,255,255,.15);color:var(--white);border:1px solid rgba(255,255,255,.3);}
+.btn-export:hover{background:rgba(255,255,255,.25);}
+
+.stats{background:var(--white);border-bottom:2px solid var(--border);padding:12px 24px;display:flex;gap:20px;overflow-x:auto;}
+.stat-box{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.stat-num{font-size:22px;font-weight:800;color:var(--navy);}
+.stat-label{font-size:12px;color:var(--gray);line-height:1.3;}
+.stat-divider{width:1px;background:var(--border);align-self:stretch;}
+
+.filters{background:var(--white);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:13px;font-weight:700;color:var(--navy);}
+select.filter,input.filter{padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;color:var(--dark);background:#fafcff;outline:none;}
+select.filter:focus,input.filter:focus{border-color:var(--navy);}
+.btn-reset{padding:7px 14px;background:var(--lighter);color:var(--navy);border:1.5px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;font-weight:700;cursor:pointer;}
+
+.table-wrap{overflow-x:auto;padding:16px 24px;}
+table{width:100%;border-collapse:collapse;background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(31,56,100,.08);}
+thead tr{background:var(--navy);}
+th{padding:12px 10px;font-size:13px;font-weight:700;color:var(--white);text-align:right;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:#f0f6ff;}
+tbody tr:last-child{border-bottom:none;}
+td{padding:11px 10px;font-size:13px;color:var(--dark);vertical-align:middle;}
+td.num{font-weight:700;color:var(--blue);font-family:monospace;direction:ltr;text-align:center;}
+
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.badge-new{background:var(--lred);color:var(--red);}
+.badge-progress{background:var(--lorange);color:var(--orange);}
+.badge-closed{background:var(--lgreen);color:var(--green);}
+.badge-hold{background:var(--lpurple);color:var(--purple);}
+
+.urg{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+.urg-low{background:#E8F5E9;color:#2E7D32;}
+.urg-med{background:#FFF8E1;color:#F9A825;}
+.urg-high{background:#FFEBEE;color:#C62828;}
+
+.act-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Tajawal',Arial;}
+.act-view{background:var(--lighter);color:var(--navy);}
+.act-del{background:#FFEBEE;color:var(--red);margin-right:4px;}
+
+.empty{text-align:center;padding:40px;color:var(--gray);}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--white);border-radius:16px;padding:24px;width:100%;max-width:640px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:16px;}
+.detail-section{margin-bottom:18px;}
+.detail-section h3{font-size:13px;font-weight:800;color:var(--blue);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px;}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+.dfield{font-size:12px;}
+.dfield b{display:block;color:var(--navy);font-size:11px;margin-bottom:2px;}
+.dfield span{color:var(--dark);}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+.form-grid .full{grid-column:1/-1;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:13px;color:var(--dark);background:#fafcff;outline:none;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--navy);}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
+.btn-save{padding:10px 24px;background:var(--navy);color:var(--white);border:none;border-radius:8px;font-family:'Tajawal',Arial;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-cancel{padding:10px 24px;background:var(--lighter);color:var(--navy);border:1px solid var(--border);border-radius:8px;font-family:'Tajawal',Arial;font-size:14px;font-weight:700;cursor:pointer;}
+
+.lock-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;z-index:1000;}
+.lock-card{background:var(--white);border-radius:18px;padding:40px 32px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.lock-icon{font-size:44px;margin-bottom:12px;}
+.lock-title{font-size:19px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+.lock-sub{font-size:13px;color:var(--gray);margin-bottom:20px;line-height:1.6;}
+.lock-input{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Tajawal',Arial;font-size:15px;text-align:center;margin-bottom:12px;outline:none;box-sizing:border-box;}
+.lock-input:focus{border-color:var(--navy);}
+.lock-btn{width:100%;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:10px;font-family:'Tajawal',Arial;font-weight:700;font-size:15px;cursor:pointer;}
+.lock-btn:hover{background:var(--blue);}
+.lock-error{color:var(--red);font-size:13px;margin-top:10px;display:none;}
+.app-hidden{display:none;}
+.loading-row td{text-align:center;padding:28px;color:var(--gray);}
+.error-row td{text-align:center;padding:28px;color:var(--red);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="lock-overlay" id="lockOverlay">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <div class="lock-title">دخول مقيّد</div>
+    <div class="lock-sub">هذا السجل خاص بالمسؤول عن معالجة الطلبات التيسيرية فقط<br><span style="direction:ltr;display:block;font-size:11px;color:#999;margin-top:4px">Restricted Access — Authorized Personnel Only</span></div>
+    <input type="password" class="lock-input" id="lockPass" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="lock-btn" onclick="tryUnlock()">دخول</button>
+    <div class="lock-error" id="lockError">كلمة المرور غير صحيحة</div>
+  </div>
+</div>
+
+<div id="appContent" class="app-hidden">
+<div class="topbar">
+  <div>
+    <div class="topbar-title">📋 سجل متابعة الطلبات التيسيرية</div>
+    <div class="topbar-sub">HR Accommodation Requests Register — Coastline Limited Company 2026</div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-export" onclick="exportCSV()">📥 تصدير Excel</button>
+    <button class="btn btn-export" onclick="exportGoogleSheets()">🔗 فتح في Google Sheets</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-box"><div class="stat-num" id="statTotal">0</div><div class="stat-label">إجمالي<br>الطلبات</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="statNew">0</div><div class="stat-label">قيد المراجعة<br>New</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--orange)" id="statProgress">0</div><div class="stat-label">قيد المعالجة<br>In Progress</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="statClosed">0</div><div class="stat-label">مغلقة<br>Closed</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="statHigh">0</div><div class="stat-label">إلحاح عالٍ<br>High Urgency</div></div>
+</div>
+
+<div class="filters">
+  <span class="filter-label">تصفية:</span>
+  <input type="text" class="filter" id="fSearch" placeholder="🔍 بحث..." oninput="renderTable()">
+  <select class="filter" id="fStatus" onchange="renderTable()">
+    <option value="">كل الحالات</option>
+    <option value="قيد المراجعة">🔴 قيد المراجعة</option>
+    <option value="قيد المعالجة">🟡 قيد المعالجة</option>
+    <option value="معلّق">🔵 معلّق</option>
+    <option value="مغلق">🟢 مغلق</option>
+  </select>
+  <select class="filter" id="fUrgency" onchange="renderTable()">
+    <option value="">كل درجات الإلحاح</option>
+    <option value="عالية">🔴 عالية</option>
+    <option value="متوسطة">🟡 متوسطة</option>
+    <option value="عادية">🟢 عادية</option>
+  </select>
+  <select class="filter" id="fCat" onchange="renderTable()">
+    <option value="">كل فئات التيسير</option>
+  </select>
+  <button class="btn-reset" onclick="resetFilters()">↺ إعادة تعيين</button>
+  <span style="margin-right:auto;font-size:13px;color:var(--gray)" id="resultCount"></span>
+</div>
+
+<div class="table-wrap">
+  <table id="mainTable">
+    <thead>
+      <tr>
+        <th>رقم الطلب</th>
+        <th>تاريخ التسجيل</th>
+        <th>الاسم الكامل</th>
+        <th>القسم</th>
+        <th>نوع الإعاقة</th>
+        <th>فئة التيسير</th>
+        <th>درجة الإلحاح</th>
+        <th>الحالة</th>
+        <th>المسؤول عن المعالجة</th>
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div class="empty" id="emptyState" style="display:none">
+    <div class="empty-icon">📭</div>
+    <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px">لا توجد طلبات مطابقة</div>
+    <div style="font-size:13px">غيّري معايير البحث، أو انتظري وصول طلبات جديدة عبر النموذج</div>
+  </div>
+</div>
+</div><!-- /appContent -->
+
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-title">📄 تفاصيل الطلب <span id="modalRef" style="color:var(--blue);direction:ltr;display:inline-block"></span></div>
+    <input type="hidden" id="editId">
+
+    <div class="detail-section">
+      <h3>البيانات الشخصية</h3>
+      <div class="detail-grid">
+        <div class="dfield"><b>الاسم الكامل</b><span id="dName"></span></div>
+        <div class="dfield"><b>الرقم الوظيفي</b><span id="dEmployeeId"></span></div>
+        <div class="dfield"><b>القسم</b><span id="dDepartment"></span></div>
+        <div class="dfield"><b>المسمى الوظيفي</b><span id="dJobTitle"></span></div>
+        <div class="dfield"><b>رقم الجوال</b><span id="dPhone" style="direction:ltr;display:inline-block"></span></div>
+        <div class="dfield"><b>البريد الإلكتروني</b><span id="dEmail" style="direction:ltr;display:inline-block"></span></div>
+        <div class="dfield"><b>موقع العمل</b><span id="dLocation"></span></div>
+        <div class="dfield"><b>المشرف المباشر</b><span id="dManager"></span></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>الإعاقة والتيسير المطلوب</h3>
+      <div class="detail-grid">
+        <div class="dfield"><b>نوع الإعاقة</b><span id="dDisability"></span></div>
+        <div class="dfield"><b>مرجع شهادة الإعاقة</b><span id="dDisabilityRef"></span></div>
+        <div class="dfield"><b>فئة التيسير</b><span id="dCategory"></span></div>
+        <div class="dfield full" style="grid-column:1/-1"><b>التيسيرات المحددة</b><span id="dTags"></span></div>
+        <div class="dfield full" style="grid-column:1/-1"><b>وصف تيسير آخر</b><span id="dOtherDetail"></span></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>التفاصيل الإضافية</h3>
+      <div class="detail-grid">
+        <div class="dfield full" style="grid-column:1/-1"><b>كيف يساعد التيسير</b><span id="dHelp"></span></div>
+        <div class="dfield full" style="grid-column:1/-1"><b>التحديات الحالية</b><span id="dChallenges"></span></div>
+        <div class="dfield"><b>مدة التيسير المتوقعة</b><span id="dDuration"></span></div>
+        <div class="dfield full" style="grid-column:1/-1"><b>ملاحظات مقدم الطلب</b><span id="dApplicantNotes"></span></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>متابعة الطلب (قابل للتعديل)</h3>
+      <div class="form-grid">
+        <div class="fg"><label>الحالة</label>
+          <select id="eStatus"><option>قيد المراجعة</option><option>قيد المعالجة</option><option>معلّق</option><option>مغلق</option></select>
+        </div>
+        <div class="fg"><label>درجة الإلحاح</label>
+          <select id="eUrgency"><option>عادية</option><option>متوسطة</option><option>عالية</option></select>
+        </div>
+        <div class="fg"><label>المسؤول عن المعالجة</label><input type="text" id="eHandler"></div>
+        <div class="fg"><label>تاريخ الإغلاق</label><input type="date" id="eCloseDate"></div>
+        <div class="fg full"><label>ملاحظات داخلية</label><textarea id="eInternalNotes" rows="3"></textarea></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">إغلاق</button>
+      <button class="btn-save" onclick="saveEdit()">💾 حفظ التعديلات</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw47Hpk5OQEnC_O5gVP9EKr4Moc7hvP2EJFMkls15VYZrI-4I4r3cXDfeXkUkYt7fVM/exec";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/1PBRoW-P05ckuSlCdppHKSR-OJQ5yLPMskm4eI0OwzIU/edit";
+const ACCESS_KEY = "CoastlineHRRequests2026";
+
+let requests = [];
+let loadTimeoutId = null;
+let loadMessageHandler = null;
+
+function tryUnlock() {
+  const val = document.getElementById('lockPass').value;
+  if (val === ACCESS_KEY) {
+    sessionStorage.setItem('coastline_hr_unlocked', '1');
+    unlockApp();
+  } else {
+    document.getElementById('lockError').style.display = 'block';
+  }
+}
+function unlockApp() {
+  document.getElementById('lockOverlay').style.display = 'none';
+  document.getElementById('appContent').classList.remove('app-hidden');
+  loadRequests();
+}
+if (sessionStorage.getItem('coastline_hr_unlocked') === '1') {
+  unlockApp();
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function urgClass(s) {
+  if(s==='عادية') return 'urg-low';
+  if(s==='متوسطة') return 'urg-med';
+  if(s==='عالية') return 'urg-high';
+  return '';
+}
+function statusClass(s) {
+  if(s==='قيد المراجعة') return 'badge-new';
+  if(s==='قيد المعالجة') return 'badge-progress';
+  if(s==='مغلق') return 'badge-closed';
+  if(s==='معلّق') return 'badge-hold';
+  return '';
+}
+
+function loadRequests() {
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '<tr class="loading-row"><td colspan="10">⏳ جارٍ تحميل السجل من Google Sheets...</td></tr>';
+
+  if (loadMessageHandler) window.removeEventListener('message', loadMessageHandler);
+  if (loadTimeoutId) clearTimeout(loadTimeoutId);
+  const oldFrame = document.getElementById('dataLoaderFrame');
+  if (oldFrame) oldFrame.remove();
+
+  let finished = false;
+
+  loadTimeoutId = setTimeout(() => {
+    if (finished) return;
+    finished = true;
+    body.innerHTML = '<tr class="error-row"><td colspan="10">⚠️ تعذّر تحميل البيانات (انتهت المهلة). تحققي من الاتصال بالإنترنت ثم أعيدي المحاولة.</td></tr>';
+    window.removeEventListener('message', loadMessageHandler);
+    const f = document.getElementById('dataLoaderFrame');
+    if (f) f.remove();
+  }, 20000);
+
+  loadMessageHandler = function (event) {
+    if (!event.data || event.data.type !== 'hrRequestsData') return;
+    if (finished) return;
+    finished = true;
+    clearTimeout(loadTimeoutId);
+    window.removeEventListener('message', loadMessageHandler);
+
+    if (event.data.payload && event.data.payload.error) {
+      body.innerHTML = `<tr class="error-row"><td colspan="10">⚠️ تعذّر تحميل البيانات (${esc(event.data.payload.error)})</td></tr>`;
+      requests = [];
+      updateStats();
+    } else {
+      requests = (event.data.payload && event.data.payload.requests) || [];
+      populateCategoryFilter();
+      renderTable();
+    }
+    const f = document.getElementById('dataLoaderFrame');
+    if (f) f.remove();
+  };
+  window.addEventListener('message', loadMessageHandler);
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'dataLoaderFrame';
+  iframe.style.display = 'none';
+  iframe.src = WEBAPP_URL + '?key=' + encodeURIComponent(ACCESS_KEY);
+  document.body.appendChild(iframe);
+}
+
+function populateCategoryFilter() {
+  const sel = document.getElementById('fCat');
+  const current = sel.value;
+  const cats = Array.from(new Set(requests.map(r => r.category).filter(Boolean))).sort();
+  sel.innerHTML = '<option value="">كل فئات التيسير</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.value = current;
+}
+
+function renderTable() {
+  const search = document.getElementById('fSearch').value.toLowerCase();
+  const fStatus = document.getElementById('fStatus').value;
+  const fUrgency = document.getElementById('fUrgency').value;
+  const fCat = document.getElementById('fCat').value;
+
+  let filtered = requests.filter(r => {
+    const txt = Object.values(r).join(' ').toLowerCase();
+    return (!search || txt.includes(search))
+      && (!fStatus || r.status === fStatus)
+      && (!fUrgency || r.urgency === fUrgency)
+      && (!fCat || r.category === fCat);
+  });
+
+  const body = document.getElementById('tableBody');
+  body.innerHTML = '';
+  document.getElementById('emptyState').style.display = filtered.length ? 'none' : 'block';
+  document.getElementById('resultCount').textContent = `عرض ${filtered.length} من ${requests.length}`;
+
+  filtered.forEach(r => {
+    const tr = document.createElement('tr');
+    const refSafe = esc(r.ref).replace(/'/g, "\\'");
+    tr.innerHTML = `
+      <td class="num">${esc(r.ref)}</td>
+      <td>${esc(r.date)}</td>
+      <td>${esc(r.name)||'—'}</td>
+      <td>${esc(r.department)||'—'}</td>
+      <td>${esc(r.disability)||'—'}</td>
+      <td style="max-width:160px">${esc(r.category)||'—'}</td>
+      <td><span class="urg ${urgClass(r.urgency)}">${esc(r.urgency)||'—'}</span></td>
+      <td><span class="badge ${statusClass(r.status)}">${esc(r.status)}</span></td>
+      <td>${esc(r.handler)||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="act-btn act-view" onclick="openDetail('${refSafe}')">📄 التفاصيل</button>
+        <button class="act-btn act-del" onclick="deleteR('${refSafe}')">🗑️</button>
+      </td>`;
+    body.appendChild(tr);
+  });
+
+  updateStats();
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = requests.length;
+  document.getElementById('statNew').textContent = requests.filter(r=>r.status==='قيد المراجعة').length;
+  document.getElementById('statProgress').textContent = requests.filter(r=>r.status==='قيد المعالجة').length;
+  document.getElementById('statClosed').textContent = requests.filter(r=>r.status==='مغلق').length;
+  document.getElementById('statHigh').textContent = requests.filter(r=>r.urgency==='عالية').length;
+}
+
+async function deleteR(ref) {
+  if(!confirm('هل تريدين حذف هذا الطلب نهائيًا من الجدول؟')) return;
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'delete', key: ACCESS_KEY, ref }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'فشل الحذف');
+    loadRequests();
+  } catch (err) {
+    alert('تعذّر حذف الطلب: ' + err.message);
+  }
+}
+
+function openDetail(ref) {
+  const r = requests.find(x=>x.ref===ref);
+  if(!r) return;
+  document.getElementById('modalRef').textContent = r.ref;
+  document.getElementById('dName').textContent = r.name || '—';
+  document.getElementById('dEmployeeId').textContent = r.employeeId || '—';
+  document.getElementById('dDepartment').textContent = r.department || '—';
+  document.getElementById('dJobTitle').textContent = r.jobTitle || '—';
+  document.getElementById('dPhone').textContent = r.phone || '—';
+  document.getElementById('dEmail').textContent = r.email || '—';
+  document.getElementById('dLocation').textContent = r.location || '—';
+  document.getElementById('dManager').textContent = r.manager || '—';
+  document.getElementById('dDisability').textContent = r.disability || '—';
+  document.getElementById('dDisabilityRef').textContent = r.disabilityRef || '—';
+  document.getElementById('dCategory').textContent = r.category || '—';
+  document.getElementById('dTags').textContent = r.tags || '—';
+  document.getElementById('dOtherDetail').textContent = r.otherDetail || '—';
+  document.getElementById('dHelp').textContent = r.help || '—';
+  document.getElementById('dChallenges').textContent = r.challenges || '—';
+  document.getElementById('dDuration').textContent = r.duration || '—';
+  document.getElementById('dApplicantNotes').textContent = r.applicantNotes || '—';
+
+  document.getElementById('editId').value = r.ref;
+  document.getElementById('eStatus').value = r.status || 'قيد المراجعة';
+  document.getElementById('eUrgency').value = r.urgency || 'عادية';
+  document.getElementById('eHandler').value = r.handler || '';
+  document.getElementById('eCloseDate').value = r.closeDate || '';
+  document.getElementById('eInternalNotes').value = r.internalNotes || '';
+
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('active'); }
+
+async function saveEdit() {
+  const ref = document.getElementById('editId') ? document.getElementById('editId').value : document.getElementById('modalRef').textContent;
+  const saveBtn = document.querySelector('.btn-save');
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'جارٍ الحفظ...';
+
+  const payload = {
+    action: 'update',
+    key: ACCESS_KEY,
+    ref,
+    status: document.getElementById('eStatus').value,
+    urgency: document.getElementById('eUrgency').value,
+    handler: document.getElementById('eHandler').value,
+    closeDate: document.getElementById('eCloseDate').value,
+    internalNotes: document.getElementById('eInternalNotes').value,
+  };
+
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'فشل التحديث');
+    closeModal();
+    loadRequests();
+  } catch (err) {
+    alert('تعذّر حفظ التعديلات: ' + err.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 حفظ التعديلات';
+  }
+}
+
+function resetFilters() {
+  ['fSearch','fStatus','fUrgency','fCat'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.tagName==='SELECT') el.selectedIndex=0;
+    else el.value='';
+  });
+  renderTable();
+}
+
+function exportCSV() {
+  const hdrs = ['رقم الطلب','التاريخ','الاسم','القسم','المسمى الوظيفي','الجوال','البريد','نوع الإعاقة','فئة التيسير','التيسيرات','الإلحاح','الحالة','المسؤول','تاريخ الإغلاق','ملاحظات داخلية'];
+  const rows = requests.map(r=>[r.ref,r.date,r.name,r.department,r.jobTitle,r.phone,r.email,r.disability,r.category,r.tags,r.urgency,r.status,r.handler,r.closeDate,r.internalNotes].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = '﻿' + hdrs.join(',') + '\n' + rows.join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = `الطلبات_التيسيرية_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function exportGoogleSheets() {
+  window.open(SHEET_URL, '_blank');
+}
+</script>
+</body>
+</html>
