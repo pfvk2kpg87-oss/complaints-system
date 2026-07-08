@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقييم خدمات ذوي الهمم – Coastline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+
+:root {
+  --navy: #1F3864;
+  --blue: #2E6DA4;
+  --light: #BDD7EE;
+  --lighter: #EBF3FB;
+  --white: #ffffff;
+  --gray: #555;
+  --border: #d0e4f4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Tajawal', Arial, sans-serif;
+  background: linear-gradient(135deg, #EBF3FB 0%, #f7fafd 60%, #e8f0f8 100%);
+  min-height: 100vh;
+  padding: 30px 16px 60px;
+}
+
+.page-wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ── TOP CARD: Logo + Welcome ── */
+.welcome-card {
+  background: var(--navy);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 32px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; left: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(189,215,238,0.08);
+}
+.welcome-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(189,215,238,0.06);
+}
+.logo-wrap {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+}
+.logo-wrap img {
+  height: 48px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+.welcome-title-ar {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.welcome-title-en {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--light);
+  direction: ltr;
+  margin-bottom: 16px;
+}
+.welcome-sub-ar {
+  font-size: 14px;
+  color: rgba(189,215,238,0.85);
+  line-height: 1.7;
+  margin-bottom: 6px;
+}
+.welcome-sub-en {
+  font-size: 12px;
+  color: rgba(189,215,238,0.7);
+  direction: ltr;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.wave-divider {
+  display: block;
+  width: 100%;
+  margin-bottom: -2px;
+}
+
+/* ── FORM CARD ── */
+.form-card {
+  background: var(--white);
+  border-radius: 0 0 20px 20px;
+  padding: 32px 32px 36px;
+  box-shadow: 0 16px 56px rgba(31,56,100,0.14);
+}
+
+/* Section label */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  margin-top: 28px;
+}
+.section-label:first-child { margin-top: 0; }
+.section-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--navy);
+  flex-shrink: 0;
+}
+.section-text-ar { font-size: 17px; font-weight: 700; color: var(--navy); }
+.section-text-en { font-size: 12px; color: var(--blue); font-weight: 500; direction: ltr; }
+.section-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(to left, transparent, var(--border));
+}
+
+/* Field groups */
+.field-group {
+  margin-bottom: 20px;
+}
+.field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.field-label-en {
+  display: block;
+  font-size: 11px;
+  color: var(--blue);
+  font-weight: 400;
+  direction: ltr;
+  margin-bottom: 8px;
+}
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Tajawal', Arial, sans-serif;
+  font-size: 14px;
+  color: var(--navy);
+  background: #fafcff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  direction: rtl;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(31,56,100,0.08);
+  background: var(--white);
+}
+textarea { resize: vertical; min-height: 90px; }
+
+/* Rating stars */
+.rating-group {
+  display: flex;
+  gap: 8px;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.rating-group input[type="radio"] { display: none; }
+.rating-group label {
+  cursor: pointer;
+  font-size: 32px;
+  color: #ddd;
+  transition: color 0.15s, transform 0.1s;
+  line-height: 1;
+}
+.rating-group input[type="radio"]:checked ~ label,
+.rating-group label:hover,
+.rating-group label:hover ~ label {
+  color: var(--navy);
+}
+.rating-group input[type="radio"]:checked ~ label { color: #f5a623; }
+
+/* Score boxes */
+.score-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.score-row input[type="radio"] { display: none; }
+.score-row label {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700;
+  color: var(--blue);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fafcff;
+}
+.score-row input[type="radio"]:checked + label {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+  transform: scale(1.08);
+}
+.score-row label:hover {
+  border-color: var(--navy);
+  background: var(--lighter);
+}
+
+/* Checkbox / radio options */
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fafcff;
+}
+.option-item:hover { border-color: var(--navy); background: var(--lighter); }
+.option-item input { display: none; }
+.option-item input:checked + .opt-box {
+  background: var(--navy);
+  border-color: var(--navy);
+}
+.option-item input:checked + .opt-box::after {
+  content: '✓';
+  color: white;
+  font-size: 11px;
+}
+.opt-box {
+  width: 20px; height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.opt-text { font-size: 13px; color: var(--navy); font-weight: 500; }
+
+/* Submit button */
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Tajawal', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 28px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.submit-btn:hover { background: var(--blue); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(31,56,100,0.25); }
+.btn-ar { display: block; }
+.btn-en { display: block; font-size: 12px; font-weight: 400; opacity: 0.8; direction: ltr; }
+
+/* Divider between sections */
+.sec-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 28px 0 0;
+}
+
+/* Success message */
+.success-msg {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+}
+.success-icon { font-size: 56px; margin-bottom: 16px; }
+.success-ar { font-size: 22px; font-weight: 800; color: var(--navy); margin-bottom: 8px; }
+.success-en { font-size: 14px; color: var(--blue); direction: ltr; }
+
+/* Required star */
+.req { color: #c0392b; margin-right: 2px; }
+
+/* Footer */
+.form-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--blue);
+  opacity: 0.7;
+}
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- Welcome Card -->
+  <div class="welcome-card">
+    <div class="logo-wrap">
+      <img src="data:image/jpeg;base64,/9j/4QFARXhpZgAATU0AKgAAAAgACAEOAAIAAAALAAAAbgESAAMAAAABAAEAAAEaAAUAAAABAAAAegEbAAUAAAABAAAAggEoAAMAAAABAAIAAAEyAAIAAAAUAAAAigITAAMAAAABAAEAAIdpAAQAAAABAAAAngAAAABTY3JlZW5zaG90AAAAAACQAAAAAQAAAJAAAAABMjAyNjowNzowMSAxMDo0NDo0NgAACZAAAAcAAAAEMDIyMZADAAIAAAAUAAABEJEBAAcAAAAEAQIDAJKGAAcAAAASAAABJKAAAAcAAAAEMDEwMKABAAMAAAABAAEAAKACAAQAAAABAAABOKADAAQAAAABAAAAtKQGAAMAAAABAAAAAAAAAAAyMDI2OjA3OjAxIDEwOjQ0OjQ2AEFTQ0lJAAAAU2NyZWVuc2hvdAAA/+EKd2h0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8APD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiBwaG90b3Nob3A6RGF0ZUNyZWF0ZWQ9IjIwMjYtMDctMDFUMTA6NDQ6NDYiIHhtcDpNb2RpZnlEYXRlPSIyMDI2LTA3LTAxVDEwOjQ0OjQ2Ij4gPGRjOmRlc2NyaXB0aW9uPiA8cmRmOkFsdD4gPHJkZjpsaSB4bWw6bGFuZz0ieC1kZWZhdWx0Ij5TY3JlZW5zaG90PC9yZGY6bGk+IDwvcmRmOkFsdD4gPC9kYzpkZXNjcmlwdGlvbj4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPD94cGFja2V0IGVuZD0idyI/PgD/4gIoSUNDX1BST0ZJTEUAAQEAAAIYYXBwbAQAAABtbnRyUkdCIFhZWiAH5gABAAEAAAAAAABhY3NwQVBQTAAAAABBUFBMAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWFwcGwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAADBjcHJ0AAABLAAAAFB3dHB0AAABfAAAABRyWFlaAAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAACBjaGFkAAAB7AAAACxiVFJDAAABzAAAACBnVFJDAAABzAAAACBtbHVjAAAAAAAAAAEAAAAMZW5VUwAAABQAAAAcAEQAaQBzAHAAbABhAHkAIABQADNtbHVjAAAAAAAAAAEAAAAMZW5VUwAAADQAAAAcAEMAbwBwAHkAcgBpAGcAaAB0ACAAQQBwAHAAbABlACAASQBuAGMALgAsACAAMgAwADIAMlhZWiAAAAAAAAD21QABAAAAANMsWFlaIAAAAAAAAIPfAAA9v////7tYWVogAAAAAAAASr8AALE3AAAKuVhZWiAAAAAAAAAoOAAAEQsAAMi5cGFyYQAAAAAAAwAAAAJmZgAA8qcAAA1ZAAAT0AAACltzZjMyAAAAAAABDEIAAAXe///zJgAAB5MAAP2Q///7ov///aMAAAPcAADAbv/bAIQAAQEBAQEBAgEBAgMCAgIDBAMDAwMEBQQEBAQEBQYFBQUFBQUG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8+cn8Hy17eJ4qwleTqyw3vPzdvuPMwvBmLoU1CGISittj4p/aS8I/t6/Ef4nahq3xy+GM2v+CdWePyLPTp1kurCBOSic7d5/iNfpZ4A/bR8S+HvCmneCfB/wT8XRCwt0t4IZYkRVVF2rlya0dD1r/goHqlho99rDWtnNf6rJb3cS2ykW1gv3ZuvJNcjqfxD/AOCilvq39kyaXaw6fFLOiX6W/mSTbD+6LxL91WWuvG8bUa9OFOthtI7WukefhuBJ0ajqU8StfT/I990zxD+2j8XgFfTLD4d6bL/HK/2y92/7Kr8imvqL4XfC9fh3pbwT6pd6xeXJ33F1ePud2/2R0VfavhzR9Z/bxvfCviHxPqhtYb7T3ij02wS2XF0uF3uxJ3LmvVv2RNc/aQ1afxDH+0IJI50uy1mnlKkSwH7oR1614FbNVVajCnyryR7CyKOHXNOopP1PulRhadTE6U+pEFFFFABRRRQB/9L+/iiiigAooooAKKKKAIfrS7AR0xUtFJoViMRp6VVubCxvk8u8hSQejqDV6imNabFO2tLSzi8q1jWNR2UbRVratOooAbsWk8telPoo1E0RlPQUbPYVJRRYdiIgHjFN2r6VPRSsGpDs9qPL9qmop6hqRLGo6U7YtPopJWHzMhwvYU7b7VJRTFqM8tPSm49qlopWEopDPLU0FEbqKfRTQzLutJ0y8xJcwRSMvQugNW4reGNNsahQPSrNFJKwNu1uhHkDsKZ8n92p6KbFYrhRngCnbMVNRQMKKKKACiiigAooooA//9P+/iiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9T+/iiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9X+/iiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA/9k=" alt="Coastline">
+    </div>
+    <div class="welcome-title-ar">نرحب بتقييمكم لخدماتنا</div>
+    <div class="welcome-title-en">We Welcome Your Feedback</div>
+    <div class="welcome-sub-ar">
+      رأيكم يُهمنا — ساعدونا في تحسين خدماتنا المقدمة لذوي الهمم<br>
+      لنوفر لكم تجربة أفضل في كل زيارة
+    </div>
+    <div class="welcome-sub-en">
+      Your opinion matters — help us improve our services<br>
+      for persons of determination
+    </div>
+    <svg class="wave-divider" viewBox="0 0 680 40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,20 C120,40 240,0 340,20 C440,40 560,0 680,20 L680,40 L0,40 Z" fill="#ffffff"/>
+    </svg>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <form id="evalForm">
+
+      <!-- Section 1: Personal Info -->
+      <div class="section-label">
+        <div class="section-dot"></div>
+        <div>
+          <div class="section-text-ar">البيانات الشخصية</div>
+          <div class="section-text-en">Personal Information</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">الاسم (اختياري) <span style="font-size:11px;color:var(--blue);font-weight:400">– Name (Optional)</span></label>
+        <input type="text" placeholder="أدخل اسمك / Enter your name">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">نوع الإعاقة <span class="req">*</span></label>
+        <label class="field-label-en">Type of Disability</label>
+        <div class="options-grid">
+          <label class="option-item"><input type="checkbox" name="distype" value="حركية"><div class="opt-box"></div><span class="opt-text">حركية / Physical</span></label>
+          <label class="option-item"><input type="checkbox" name="distype" value="بصرية"><div class="opt-box"></div><span class="opt-text">بصرية / Visual</span></label>
+          <label class="option-item"><input type="checkbox" name="distype" value="سمعية"><div class="opt-box"></div><span class="opt-text">سمعية / Hearing</span></label>
+          <label class="option-item"><input type="checkbox" name="distype" value="ذهنية"><div class="opt-box"></div><span class="opt-text">ذهنية / Cognitive</span></label>
+          <label class="option-item"><input type="checkbox" name="distype" value="متعددة"><div class="opt-box"></div><span class="opt-text">متعددة / Multiple</span></label>
+          <label class="option-item"><input type="checkbox" name="distype" value="أخرى"><div class="opt-box"></div><span class="opt-text">أخرى / Other</span></label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">طبيعة الزيارة <span class="req">*</span></label>
+        <label class="field-label-en">Visit Type</label>
+        <div class="options-grid">
+          <label class="option-item"><input type="radio" name="visittype" value="موظف"><div class="opt-box" style="border-radius:50%"></div><span class="opt-text">موظف / Employee</span></label>
+          <label class="option-item"><input type="radio" name="visittype" value="عميل"><div class="opt-box" style="border-radius:50%"></div><span class="opt-text">عميل / Client</span></label>
+          <label class="option-item"><input type="radio" name="visittype" value="زائر"><div class="opt-box" style="border-radius:50%"></div><span class="opt-text">زائر / Visitor</span></label>
+          <label class="option-item"><input type="radio" name="visittype" value="أخرى"><div class="opt-box" style="border-radius:50%"></div><span class="opt-text">أخرى / Other</span></label>
+        </div>
+      </div>
+
+      <div class="sec-divider"></div>
+
+      <!-- Section 2: Facility Rating -->
+      <div class="section-label" style="margin-top:28px">
+        <div class="section-dot"></div>
+        <div>
+          <div class="section-text-ar">تقييم المرافق وسهولة الوصول</div>
+          <div class="section-text-en">Facilities & Accessibility Rating</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">سهولة الدخول إلى المبنى <span class="req">*</span></label>
+        <label class="field-label-en">Ease of Building Access</label>
+        <div class="score-row">
+          <input type="radio" name="access" id="a1" value="1"><label for="a1">1</label>
+          <input type="radio" name="access" id="a2" value="2"><label for="a2">2</label>
+          <input type="radio" name="access" id="a3" value="3"><label for="a3">3</label>
+          <input type="radio" name="access" id="a4" value="4"><label for="a4">4</label>
+          <input type="radio" name="access" id="a5" value="5"><label for="a5">5</label>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--blue);direction:ltr">
+          <span>Poor / ضعيف</span><span>Excellent / ممتاز</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">توافر التسهيلات المادية (منحدرات، مصاعد...) <span class="req">*</span></label>
+        <label class="field-label-en">Physical Accommodations (Ramps, Elevators...)</label>
+        <div class="score-row">
+          <input type="radio" name="physical" id="p1" value="1"><label for="p1">1</label>
+          <input type="radio" name="physical" id="p2" value="2"><label for="p2">2</label>
+          <input type="radio" name="physical" id="p3" value="3"><label for="p3">3</label>
+          <input type="radio" name="physical" id="p4" value="4"><label for="p4">4</label>
+          <input type="radio" name="physical" id="p5" value="5"><label for="p5">5</label>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--blue);direction:ltr">
+          <span>Poor / ضعيف</span><span>Excellent / ممتاز</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">مدى توافر اللافتات الإرشادية الواضحة <span class="req">*</span></label>
+        <label class="field-label-en">Clarity of Directional Signage</label>
+        <div class="score-row">
+          <input type="radio" name="signage" id="s1" value="1"><label for="s1">1</label>
+          <input type="radio" name="signage" id="s2" value="2"><label for="s2">2</label>
+          <input type="radio" name="signage" id="s3" value="3"><label for="s3">3</label>
+          <input type="radio" name="signage" id="s4" value="4"><label for="s4">4</label>
+          <input type="radio" name="signage" id="s5" value="5"><label for="s5">5</label>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--blue);direction:ltr">
+          <span>Poor / ضعيف</span><span>Excellent / ممتاز</span>
+        </div>
+      </div>
+
+      <div class="sec-divider"></div>
+
+      <!-- Section 3: Staff & Service -->
+      <div class="section-label" style="margin-top:28px">
+        <div class="section-dot"></div>
+        <div>
+          <div class="section-text-ar">تقييم الموظفين وجودة الخدمة</div>
+          <div class="section-text-en">Staff & Service Quality Rating</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">مدى تعاون الموظفين ودعمهم <span class="req">*</span></label>
+        <label class="field-label-en">Staff Cooperation & Support</label>
+        <div class="score-row">
+          <input type="radio" name="staff" id="st1" value="1"><label for="st1">1</label>
+          <input type="radio" name="staff" id="st2" value="2"><label for="st2">2</label>
+          <input type="radio" name="staff" id="st3" value="3"><label for="st3">3</label>
+          <input type="radio" name="staff" id="st4" value="4"><label for="st4">4</label>
+          <input type="radio" name="staff" id="st5" value="5"><label for="st5">5</label>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--blue);direction:ltr">
+          <span>Poor / ضعيف</span><span>Excellent / ممتاز</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">سرعة تلبية الاحتياجات الخاصة <span class="req">*</span></label>
+        <label class="field-label-en">Response Speed for Special Needs</label>
+        <div class="score-row">
+          <input type="radio" name="speed" id="sp1" value="1"><label for="sp1">1</label>
+          <input type="radio" name="speed" id="sp2" value="2"><label for="sp2">2</label>
+          <input type="radio" name="speed" id="sp3" value="3"><label for="sp3">3</label>
+          <input type="radio" name="speed" id="sp4" value="4"><label for="sp4">4</label>
+          <input type="radio" name="speed" id="sp5" value="5"><label for="sp5">5</label>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--blue);direction:ltr">
+          <span>Poor / ضعيف</span><span>Excellent / ممتاز</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">التقييم العام للخدمة <span class="req">*</span></label>
+        <label class="field-label-en">Overall Service Rating</label>
+        <div class="rating-group">
+          <input type="radio" name="overall" id="ov5" value="5"><label for="ov5">★</label>
+          <input type="radio" name="overall" id="ov4" value="4"><label for="ov4">★</label>
+          <input type="radio" name="overall" id="ov3" value="3"><label for="ov3">★</label>
+          <input type="radio" name="overall" id="ov2" value="2"><label for="ov2">★</label>
+          <input type="radio" name="overall" id="ov1" value="1"><label for="ov1">★</label>
+        </div>
+      </div>
+
+      <div class="sec-divider"></div>
+
+      <!-- Section 4: Open Feedback -->
+      <div class="section-label" style="margin-top:28px">
+        <div class="section-dot"></div>
+        <div>
+          <div class="section-text-ar">ملاحظات ومقترحات</div>
+          <div class="section-text-en">Comments & Suggestions</div>
+        </div>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">ما الذي أعجبك في خدماتنا؟</label>
+        <label class="field-label-en">What did you like about our services?</label>
+        <textarea placeholder="اكتب ملاحظاتك هنا / Write your comments here..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">ما الذي تقترح تحسينه؟</label>
+        <label class="field-label-en">What would you suggest we improve?</label>
+        <textarea placeholder="مقترحاتك تُهمنا / Your suggestions matter to us..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">هل تواجه أي عقبة معينة في مرافقنا؟</label>
+        <label class="field-label-en">Do you face any specific obstacle in our facilities?</label>
+        <div class="options-grid" style="margin-bottom:8px">
+          <label class="option-item"><input type="radio" name="obstacle" value="نعم"><div class="opt-box" style="border-radius:50%"></div><span class="opt-text">نعم / Yes</span></label>
+          <label class="option-item"><input type="radio" name="obstacle" value="لا"><div class="opt-box" style="border-radius:50%"></div><span class="opt-text">لا / No</span></label>
+        </div>
+        <textarea placeholder="إذا نعم، يرجى التوضيح / If yes, please describe..." style="margin-top:8px"></textarea>
+      </div>
+
+      <!-- Submit -->
+      <button type="button" class="submit-btn" onclick="submitForm()">
+        <span class="btn-ar">إرسال التقييم</span>
+        <span class="btn-en">Submit Evaluation</span>
+      </button>
+
+    </form>
+
+    <!-- Success -->
+    <div class="success-msg" id="successMsg">
+      <div class="success-icon">✅</div>
+      <div class="success-ar">شكراً على تقييمكم!</div>
+      <div class="success-en" style="margin-top:4px">Thank you for your feedback!</div>
+      <div style="margin-top:12px;font-size:13px;color:var(--blue);line-height:1.7">
+        تم استلام تقييمكم بنجاح، ونشكركم على وقتكم<br>
+        <span style="direction:ltr;display:block">Your evaluation has been sent successfully</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="form-footer">
+    جميع الحقوق محفوظة © Coastline Limited Company 2026
+  </div>
+</div>
+
+<script>
+// ── إعداد الاتصال بـ Google Forms ──
+const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLScJJXy3vsgfIt4gnMOHiKQOjLpzv8CaPhcU20JvNvQ8CD-Arw/formResponse";
+const GOOGLE_FORM_ENTRY  = "entry.94609395";
+
+function genRef(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const rand = (crypto.randomUUID ? crypto.randomUUID().replace(/-/g,'') : (Date.now()+Math.random().toString(36))).slice(0,6).toUpperCase();
+  return `EVAL-${y}${m}${d}-${rand}`;
+}
+
+function submitForm() {
+  const form = document.getElementById('evalForm');
+
+  const nameVal = form.querySelector('input[type="text"]').value;
+  const disTypes = [...form.querySelectorAll('input[name="distype"]:checked')].map(i=>i.value);
+  const visitType = form.querySelector('input[name="visittype"]:checked');
+  const scoreNames = ['access','physical','signage','staff','speed'];
+  const scores = {};
+  scoreNames.forEach(n => {
+    const checked = form.querySelector(`input[name="${n}"]:checked`);
+    scores[n] = checked ? checked.value : '';
+  });
+  const overall = form.querySelector('input[name="overall"]:checked');
+  const textareas = form.querySelectorAll('textarea');
+  const obstacle = form.querySelector('input[name="obstacle"]:checked');
+
+  const ticket = genRef();
+  const submissionId = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(36).slice(2)));
+
+  const payload = {
+    submissionId,
+    ref: ticket,
+    date: new Date().toISOString().slice(0,10),
+    name: nameVal || '',
+    disabilityType: disTypes.join('، '),
+    visitType: visitType ? visitType.value : '',
+    access: scores.access,
+    physical: scores.physical,
+    signage: scores.signage,
+    staff: scores.staff,
+    speed: scores.speed,
+    overall: overall ? overall.value : '',
+    liked: textareas[0] ? textareas[0].value : '',
+    suggestions: textareas[1] ? textareas[1].value : '',
+    obstacle: obstacle ? obstacle.value : '',
+    obstacleDetail: textareas[2] ? textareas[2].value : '',
+    source: 'نموذج التسجيل الإلكتروني (Google Forms)',
+  };
+
+  const iframe = document.createElement('iframe');
+  iframe.name = 'hidden_submit_frame_' + Date.now();
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  const gform = document.createElement('form');
+  gform.action = GOOGLE_FORM_ACTION;
+  gform.method = 'POST';
+  gform.target = iframe.name;
+  gform.style.display = 'none';
+
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = GOOGLE_FORM_ENTRY;
+  input.value = JSON.stringify(payload);
+  gform.appendChild(input);
+
+  document.body.appendChild(gform);
+  gform.submit();
+
+  // Show success
+  setTimeout(() => {
+    document.getElementById('evalForm').style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+  }, 700);
+}
+</script>
+</body>
+</html>
